@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: demo-app
+  namespace: demo
+  labels:
+    app: demo-app
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: demo-app
+
+  template:
+    metadata:
+      labels:
+        app: demo-app
+
+    spec:
+      containers:
+      - name: demo-app
+        image: nginx
+
+        ports:
+        - containerPort: 80
+
+        env:
+        - name: APP_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: demo-config
+              key: APP_NAME
+
+        - name: ENVIRONMENT
+          valueFrom:
+            configMapKeyRef:
+              name: demo-config
+              key: ENVIRONMENT
+
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: demo-config
+              key: LOG_LEVEL
+
+        - name: APP_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: demo-config
+              key: APP_PORT
+
+        - name: WELCOME_MESSAGE
+          valueFrom:
+            configMapKeyRef:
+              name: demo-config
+              key: WELCOME_MESSAGE
+
+        - name: USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: demo-secret
+              key: USERNAME
+
+        - name: PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: demo-secret
+              key: PASSWORD
+
+        volumeMounts:
+        - name: html-volume
+          mountPath: /usr/share/nginx/html/index.html
+          subPath: index.html
+
+      volumes:
+      - name: html-volume
+        configMap:
+          name: demo-config

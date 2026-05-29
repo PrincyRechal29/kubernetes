@@ -1,0 +1,401 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: demo-config
+  namespace: demo
+
+data:
+  APP_NAME: "sample-webapp"
+  ENVIRONMENT: "dev"
+  LOG_LEVEL: "info"
+  APP_PORT: "8080"
+  WELCOME_MESSAGE: "Welcome to Kubernetes Demo Application"
+
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Princy DevOps Platform</title>
+
+    <style>
+        *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body{
+        min-height:100vh;
+        overflow:hidden;
+        background:#050816;
+        color:white;
+        position:relative;
+        }
+
+        /* Animated Background */
+
+        .bg{
+        position:absolute;
+        width:100%;
+        height:100%;
+        overflow:hidden;
+        z-index:-1;
+        }
+
+        .circle{
+        position:absolute;
+        border-radius:50%;
+        filter:blur(90px);
+        opacity:0.5;
+        animation:float 10s infinite alternate;
+        }
+
+        .circle:nth-child(1){
+        width:300px;
+        height:300px;
+        background:#6c63ff;
+        top:-50px;
+        left:-50px;
+        }
+
+        .circle:nth-child(2){
+        width:350px;
+        height:350px;
+        background:#00d4ff;
+        bottom:-100px;
+        right:-50px;
+        animation-duration:14s;
+        }
+
+        .circle:nth-child(3){
+        width:250px;
+        height:250px;
+        background:#ff4ecd;
+        top:40%;
+        left:60%;
+        animation-duration:12s;
+        }
+
+        @keyframes float{
+        from{
+            transform:translateY(0px) translateX(0px);
+        }
+        to{
+            transform:translateY(-40px) translateX(30px);
+        }
+        }
+
+        /* Navbar */
+
+        nav{
+        width:100%;
+        padding:25px 8%;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        position:relative;
+        z-index:10;
+        }
+
+        .logo{
+        font-size:28px;
+        font-weight:bold;
+        color:#00d4ff;
+        letter-spacing:1px;
+        }
+
+        .nav-links{
+        display:flex;
+        gap:25px;
+        }
+
+        .nav-links a{
+        text-decoration:none;
+        color:#cfd8ff;
+        transition:0.3s;
+        font-size:16px;
+        }
+
+        .nav-links a:hover{
+        color:#00d4ff;
+        }
+
+        /* Hero Section */
+
+        .hero{
+        width:100%;
+        height:85vh;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        padding:0 8%;
+        }
+
+        .glass{
+        width:100%;
+        max-width:1200px;
+        background:rgba(255,255,255,0.08);
+        border:1px solid rgba(255,255,255,0.15);
+        backdrop-filter:blur(16px);
+        border-radius:30px;
+        padding:60px;
+        box-shadow:0 0 40px rgba(0,0,0,0.4);
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:40px;
+        }
+
+        .left{
+        flex:1;
+        }
+
+        .tag{
+        display:inline-block;
+        padding:10px 18px;
+        border-radius:30px;
+        background:rgba(0,212,255,0.15);
+        color:#00d4ff;
+        margin-bottom:25px;
+        border:1px solid rgba(0,212,255,0.3);
+        font-size:14px;
+        }
+
+        h1{
+        font-size:64px;
+        line-height:1.1;
+        margin-bottom:25px;
+        }
+
+        h1 span{
+        background:linear-gradient(90deg,#00d4ff,#ff4ecd);
+        -webkit-background-clip:text;
+        -webkit-text-fill-color:transparent;
+        }
+
+        p{
+        font-size:18px;
+        line-height:1.8;
+        color:#d9e3ff;
+        margin-bottom:35px;
+        max-width:650px;
+        }
+
+        .buttons{
+        display:flex;
+        gap:20px;
+        flex-wrap:wrap;
+        }
+
+        .btn{
+        padding:14px 28px;
+        border-radius:14px;
+        text-decoration:none;
+        font-weight:600;
+        transition:0.3s;
+        }
+
+        .primary{
+        background:linear-gradient(90deg,#00d4ff,#6c63ff);
+        color:white;
+        box-shadow:0 0 20px rgba(0,212,255,0.5);
+        }
+
+        .primary:hover{
+        transform:translateY(-3px);
+        box-shadow:0 0 30px rgba(0,212,255,0.8);
+        }
+
+        .secondary{
+        border:1px solid rgba(255,255,255,0.2);
+        color:white;
+        background:rgba(255,255,255,0.05);
+        }
+
+        .secondary:hover{
+        background:rgba(255,255,255,0.12);
+        }
+
+        /* Right Side */
+
+        .right{
+        flex:1;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        }
+
+        .card{
+        width:350px;
+        padding:30px;
+        border-radius:24px;
+        background:rgba(255,255,255,0.06);
+        border:1px solid rgba(255,255,255,0.12);
+        box-shadow:0 0 25px rgba(0,0,0,0.3);
+        }
+
+        .status{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        margin-bottom:20px;
+        }
+
+        .dot{
+        width:12px;
+        height:12px;
+        border-radius:50%;
+        background:#00ff88;
+        box-shadow:0 0 12px #00ff88;
+        }
+
+        .metric{
+        margin:20px 0;
+        }
+
+        .metric h3{
+        font-size:15px;
+        color:#a8b3cf;
+        margin-bottom:10px;
+        }
+
+        .bar{
+        width:100%;
+        height:10px;
+        border-radius:20px;
+        background:rgba(255,255,255,0.1);
+        overflow:hidden;
+        }
+
+        .fill{
+        height:100%;
+        border-radius:20px;
+        background:linear-gradient(90deg,#00d4ff,#ff4ecd);
+        }
+
+        footer{
+        position:absolute;
+        bottom:20px;
+        width:100%;
+        text-align:center;
+        color:#8ea0d8;
+        font-size:14px;
+        }
+
+        @media(max-width:1000px){
+
+        body{
+            overflow:auto;
+        }
+
+        .glass{
+            flex-direction:column;
+            text-align:center;
+        }
+
+        h1{
+            font-size:48px;
+        }
+
+        .buttons{
+            justify-content:center;
+        }
+        }
+
+    </style>
+    </head>
+
+    <body>
+
+    <div class="bg">
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+    </div>
+
+    <nav>
+        <div class="logo">PRINCY.dev</div>
+
+        <div class="nav-links">
+        <a href="#">Home</a>
+        <a href="#">Projects</a>
+        <a href="#">DevOps</a>
+        <a href="#">Contact</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+
+        <div class="glass">
+
+        <div class="left">
+
+            <div class="tag">
+            Kubernetes • Docker • DevOps • Cloud
+            </div>
+
+            <h1>
+            Building <span>Modern Cloud Platforms</span> with DevOps
+            </h1>
+
+            <p>
+            This futuristic web application is deployed inside Kubernetes using
+            Deployment, Service, ConfigMap and Secrets with Nginx container.
+            Designed and developed by Princy.
+            </p>
+
+            <div class="buttons">
+            <a href="#" class="btn primary">Explore Platform</a>
+            <a href="#" class="btn secondary">View Projects</a>
+            </div>
+
+        </div>
+
+        <div class="right">
+
+            <div class="card">
+
+            <div class="status">
+                <div class="dot"></div>
+                <span>Cluster Running Successfully</span>
+            </div>
+
+            <div class="metric">
+                <h3>Kubernetes Deployment</h3>
+                <div class="bar">
+                <div class="fill" style="width:95%"></div>
+                </div>
+            </div>
+
+            <div class="metric">
+                <h3>Container Health</h3>
+                <div class="bar">
+                <div class="fill" style="width:98%"></div>
+                </div>
+            </div>
+
+            <div class="metric">
+                <h3>DevOps Automation</h3>
+                <div class="bar">
+                <div class="fill" style="width:92%"></div>
+                </div>
+            </div>
+
+            </div>
+
+        </div>
+
+        </div>
+
+    </section>
+
+    <footer>
+        Designed & Developed by Princy • Kubernetes Demo Platform
+    </footer>
+
+    </body>
+    </html>
