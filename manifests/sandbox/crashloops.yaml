@@ -1,0 +1,504 @@
+# Sandbox CrashLoopBackOff test deployments
+# Each simulates a distinct real-world failure mode.
+#
+# Apply:  kubectl apply -f namespace.yaml -f crashloops.yaml
+# Watch:  kubectl get pods -n sandbox -w
+# Clean:  kubectl delete namespace sandbox
+
+---
+# ── 1. OOM KILLER ─────────────────────────────────────────────────────────────
+# Simulates a memory leak (Node.js heap overflow, Java heap space, etc.)
+# Container tail-reads /dev/zero, filling RSS until the kernel OOMKills it.
+# Exit code: 137 (SIGKILL). Shows as OOMKilled in pod describe.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oom-killer
+  namespace: sandbox
+  labels:
+    app: oom-killer
+    scenario: oom-killed
+  annotations:
+    description: "Memory leak — container exceeds 32Mi limit and is OOMKilled"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: oom-killer
+  template:
+    metadata:
+      labels:
+        app: oom-killer
+        scenario: oom-killed
+    spec:
+      containers:
+      - name: app
+        image: busybox:1.36
+        command:
+        - sh
+        - -c
+        - |
+          echo "app starting, allocating memory..."
+          tail /dev/zero
+        resources:
+          requests:
+            memory: 16Mi
+            cpu: 10m
+          limits:
+            memory: 32Mi
+            cpu: 100m
+
+---
+# ── 2. MISSING REQUIRED ENV VAR ───────────────────────────────────────────────
+# Simulates an app that validates its config on startup and exits when a
+# required environment variable (DATABASE_URL) is absent.
+# Exit code: 1. Common in 12-factor apps, Helm chart misconfiguration.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: missing-config
+  namespace: sandbox
+  labels:
+    app: missing-config
+    scenario: config-error
+  annotations:
+    description: "App crashes on startup because DATABASE_URL env var is not set"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: missing-config
+  template:
+    metadata:
+      labels:
+        app: missing-config
+        scenario: config-error
+    spec:
+      containers:
+      - name: app
+        image: busybox:1.36
+        command:
+        - sh
+        - -c
+        - |
+          echo "Validating configuration..."
+          sleep 1
+          if [ -z "$DATABASE_URL" ]; then
+            echo "FATAL: required env var DATABASE_URL is not set" >&2
+            exit 1
+          fi
+          echo "Config OK, starting server"
+          sleep infinity
+        resources:
+          requests:
+            memory: 16Mi
+            cpu: 10m
+          limits:
+            memory: 64Mi
+            cpu: 100m
+
+---
+# ── 3. DEPENDENCY UNREACHABLE ─────────────────────────────────────────────────
+# Simulates a microservice that fails because it cannot TCP-connect to its
+# upstream database on startup. Common when a service is deployed before
+# its dependency, or the dependency crashes.
+# Exit code: 1.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dependency-timeout
+  namespace: sandbox
+  labels:
+    app: dependency-timeout
+    scenario: dependency-missing
+  annotations:
+    description: "App crashes because postgres-primary:5432 is unreachable"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: dependency-timeout
+  template:
+    metadata:
+      labels:
+        app: dependency-timeout
+        scenario: dependency-missing
+    spec:
+      containers:
+      - name: app
+        image: busybox:1.36
+        command:
+        - sh
+        - -c
+        - |
+          echo "Waiting for postgres-primary.sandbox.svc.cluster.local:5432..."
+          sleep 2
+          nc -zw3 postgres-primary.sandbox.svc.cluster.local 5432
+          if [ $? -ne 0 ]; then
+            echo "FATAL: cannot connect to postgres-primary:5432 — connection refused" >&2
+            exit 1
+          fi
+          echo "Database ready, starting app"
+          sleep infinity
+        resources:
+          requests:
+            memory: 16Mi
+            cpu: 10m
+          limits:
+            memory: 64Mi
+            cpu: 100m
+
+---
+# ── 4. LIVENESS PROBE FAILURE ─────────────────────────────────────────────────
+# Simulates an app that starts successfully but then deadlocks or hangs.
+# The process is alive so Kubernetes won't detect it without a liveness probe.
+# The liveness probe hits /healthz on port 8080 — nothing is listening there,
+# so after 3 failures the kubelet kills and restarts the container.
+# Real examples: goroutine deadlock, thread pool exhaustion, GC pause loop.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: liveness-probe-fail
+  namespace: sandbox
+  labels:
+    app: liveness-probe-fail
+    scenario: liveness-failure
+  annotations:
+    description: "App process alive but deadlocked — liveness probe kills it after 3 failures"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: liveness-probe-fail
+  template:
+    metadata:
+      labels:
+        app: liveness-probe-fail
+        scenario: liveness-failure
+    spec:
+      containers:
+      - name: app
+        image: busybox:1.36
+        command:
+        - sh
+        - -c
+        - |
+          echo "Server started on :8080"
+          echo "WARNING: entering deadlock simulation — health endpoint will stop responding"
+          sleep infinity
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: 16Mi
+            cpu: 10m
+          limits:
+            memory: 64Mi
+            cpu: 100m
+
+---
+# ── 5. INIT CONTAINER CRASH (DB MIGRATION FAILURE) ────────────────────────────
+# Simulates a failed database migration in an init container.
+# The main application container never starts — pods stay in Init:CrashLoopBackOff.
+# Real examples: Flyway/Liquibase migration conflict, schema mismatch,
+# missing migration lock release.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: init-crash
+  namespace: sandbox
+  labels:
+    app: init-crash
+    scenario: init-container-failure
+  annotations:
+    description: "DB migration fails in init container — main app never starts"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: init-crash
+  template:
+    metadata:
+      labels:
+        app: init-crash
+        scenario: init-container-failure
+    spec:
+      initContainers:
+      - name: db-migrate
+        image: busybox:1.36
+        command:
+        - sh
+        - -c
+        - |
+          echo "Running database migrations..."
+          sleep 3
+          echo "ERROR: migration V42__add_user_index.sql failed" >&2
+          echo "ERROR: column 'email' of relation 'users' already exists" >&2
+          exit 1
+        resources:
+          requests:
+            memory: 16Mi
+            cpu: 10m
+          limits:
+            memory: 64Mi
+            cpu: 100m
+      containers:
+      - name: app
+        image: busybox:1.36
+        command: ["sh", "-c", "echo 'App running'; sleep infinity"]
+        resources:
+          requests:
+            memory: 16Mi
+            cpu: 10m
+          limits:
+            memory: 64Mi
+            cpu: 100m
+
+---
+# ── 6. RUNTIME PANIC ──────────────────────────────────────────────────────────
+# Simulates a Go/Java runtime panic (nil pointer dereference, index out of range)
+# that surfaces only after the app has initialised. Common in production when
+# an edge-case request hits unguarded code.
+# Exit code: 2 (mimics Go panic exit).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: runtime-panic
+  namespace: sandbox
+  labels:
+    app: runtime-panic
+    scenario: runtime-panic
+  annotations:
+    description: "Go-style nil pointer panic after 5s startup — exits with code 2"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: runtime-panic
+  template:
+    metadata:
+      labels:
+        app: runtime-panic
+        scenario: runtime-panic
+    spec:
+      containers:
+      - name: app
+        image: busybox:1.36
+        command:
+        - sh
+        - -c
+        - |
+          echo "goroutine 1 [running]: main.main()"
+          echo "Server listening on :8080"
+          sleep 5
+          echo "panic: runtime error: invalid memory address or nil pointer dereference" >&2
+          echo "goroutine 14 [running]:" >&2
+          echo "main.(*Handler).ServeHTTP(0x0, {0x6f3680, 0xc0001a4000}, 0x?)" >&2
+          echo "        /app/handler.go:42 +0x68" >&2
+          exit 2
+        resources:
+          requests:
+            memory: 16Mi
+            cpu: 10m
+          limits:
+            memory: 64Mi
+            cpu: 100m
+
+---
+# ── 7. EPHEMERAL STORAGE EXHAUSTION (LOG FLOODING) ────────────────────────────
+# Simulates an app flooding stdout/tmp with logs or temp files until the
+# ephemeral storage limit is hit. Kubernetes evicts (then restarts) the pod.
+# Real examples: verbose debug logging left on in prod, core dump written to /tmp.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: log-flood
+  namespace: sandbox
+  labels:
+    app: log-flood
+    scenario: ephemeral-storage-exceeded
+  annotations:
+    description: "App writes ~150Mi to /tmp, exceeding the 100Mi ephemeral-storage limit"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: log-flood
+  template:
+    metadata:
+      labels:
+        app: log-flood
+        scenario: ephemeral-storage-exceeded
+    spec:
+      containers:
+      - name: app
+        image: busybox:1.36
+        command:
+        - sh
+        - -c
+        - |
+          echo "App started, writing diagnostic data to /tmp..."
+          dd if=/dev/urandom of=/tmp/coredump.bin bs=1M count=150 2>&1
+          echo "Write complete"
+          sleep infinity
+        resources:
+          requests:
+            memory: 16Mi
+            cpu: 10m
+            ephemeral-storage: 50Mi
+          limits:
+            memory: 64Mi
+            cpu: 100m
+            ephemeral-storage: 100Mi
+
+---
+# ── 8. WRONG COMMAND / MISSING BINARY ─────────────────────────────────────────
+# Simulates a container whose entrypoint binary does not exist or was built
+# for the wrong architecture. Container starts, shell exits 127 immediately.
+# Real examples: image built for amd64 run on arm64, binary path typo in Dockerfile.
+# Exit code: 127 (command not found).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bad-binary
+  namespace: sandbox
+  labels:
+    app: bad-binary
+    scenario: exec-failure
+  annotations:
+    description: "Entrypoint binary not found — exits 127 (command not found)"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bad-binary
+      scenario: exec-failure
+  template:
+    metadata:
+      labels:
+        app: bad-binary
+        scenario: exec-failure
+    spec:
+      containers:
+      - name: app
+        image: busybox:1.36
+        command: ["sh", "-c", "/app/server --config /etc/app/config.yaml"]
+        resources:
+          requests:
+            memory: 16Mi
+            cpu: 10m
+          limits:
+            memory: 64Mi
+            cpu: 100m
+
+---
+# ── 9. READINESS PROBE NEVER PASSES (PENDING TRAFFIC) ─────────────────────────
+# Simulates an app that is always starting but never ready — pods stay
+# Running but 0/1 Ready, and traffic is never routed to them.
+# After enough restarts the container goes CrashLoopBackOff.
+# Real examples: slow DB connection pool warmup, waiting for external
+# health dependency that is down, infinite retry loop on startup.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: never-ready
+  namespace: sandbox
+  labels:
+    app: never-ready
+    scenario: readiness-failure
+  annotations:
+    description: "App never passes readiness check — stuck 0/1 Ready, restarts accumulate"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: never-ready
+  template:
+    metadata:
+      labels:
+        app: never-ready
+        scenario: readiness-failure
+    spec:
+      containers:
+      - name: app
+        image: busybox:1.36
+        command:
+        - sh
+        - -c
+        - |
+          echo "Waiting for upstream cache to warm up..."
+          sleep infinity
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 9000
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 9000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: 16Mi
+            cpu: 10m
+          limits:
+            memory: 64Mi
+            cpu: 100m
+
+---
+# ── 10. TLS CERTIFICATE EXPIRED ───────────────────────────────────────────────
+# Simulates an app that validates its own TLS certificate on startup
+# and refuses to start if the cert is expired or missing.
+# Real examples: cert-manager not renewing, manually managed certs rotated incorrectly.
+# Exit code: 1.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cert-expired
+  namespace: sandbox
+  labels:
+    app: cert-expired
+    scenario: tls-cert-expired
+  annotations:
+    description: "App refuses to start because TLS certificate is expired"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cert-expired
+  template:
+    metadata:
+      labels:
+        app: cert-expired
+        scenario: tls-cert-expired
+    spec:
+      containers:
+      - name: app
+        image: busybox:1.36
+        command:
+        - sh
+        - -c
+        - |
+          echo "Loading TLS configuration..."
+          sleep 1
+          echo "ERROR: TLS certificate /etc/tls/tls.crt has expired" >&2
+          echo "ERROR: certificate valid until 2024-01-01T00:00:00Z, current time 2026-06-03T00:00:00Z" >&2
+          echo "ERROR: refusing to start with an expired certificate" >&2
+          exit 1
+        resources:
+          requests:
+            memory: 16Mi
+            cpu: 10m
+          limits:
+            memory: 64Mi
+            cpu: 100m
