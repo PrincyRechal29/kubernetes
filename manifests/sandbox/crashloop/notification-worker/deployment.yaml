@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: notification-worker
+  namespace: sandbox
+  labels:
+    app: notification-worker
+    version: v1.3.0
+    team: messaging
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: notification-worker
+
+  template:
+    metadata:
+      labels:
+        app: notification-worker
+        version: v1.3.0
+
+    spec:
+      containers:
+      - name: notification-worker
+        image: busybox:1.36
+
+        command:
+        - sh
+        - -c
+        - |
+          echo "[notification-worker] starting worker pool"
+          echo "[notification-worker] connected to message queue"
+          echo "[notification-worker] processing events on :8080"
+          sleep infinity
+
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 3
+
+        resources:
+          requests:
+            memory: 32Mi
+            cpu: 10m
+          limits:
+            memory: 128Mi
+            cpu: 200m

@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: report-generator
+  namespace: sandbox
+  labels:
+    app: report-generator
+    version: v2.8.0
+    team: analytics
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: report-generator
+
+  template:
+    metadata:
+      labels:
+        app: report-generator
+        version: v2.8.0
+
+    spec:
+      containers:
+      - name: report-generator
+        image: busybox:1.36
+
+        command:
+        - sh
+        - -c
+        - |
+          echo "[report-generator] starting scheduled report run"
+          echo "[report-generator] exporting CSV data to /tmp/export"
+          dd if=/dev/urandom of=/tmp/report-export.csv bs=1M count=150 2>&1
+          echo "[report-generator] export complete"
+          sleep infinity
+
+        resources:
+          requests:
+            memory: 64Mi
+            cpu: 50m
+            ephemeral-storage: 50Mi
+          limits:
+            memory: 256Mi
+            cpu: 500m
+            ephemeral-storage: 100Mi

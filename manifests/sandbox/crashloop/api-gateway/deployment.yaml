@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: api-gateway
+  namespace: sandbox
+  labels:
+    app: api-gateway
+    version: v5.2.3
+    team: platform
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: api-gateway
+
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+        version: v5.2.3
+
+    spec:
+      containers:
+      - name: api-gateway
+        image: busybox:1.36
+
+        command:
+        - sh
+        - -c
+        - |
+          echo "[api-gateway] loading route configuration"
+          echo "[api-gateway] registering upstream services"
+          echo "[api-gateway] listening on :443"
+          sleep 5
+          echo "panic: runtime error: invalid memory address or nil pointer dereference" >&2
+          echo "goroutine 23 [running]:" >&2
+          echo "gateway/proxy.(*ReverseProxy).ServeHTTP(0x0, {0x7f3c20, 0xc0002a4000}, 0x?)" >&2
+          echo "        /src/proxy/handler.go:84 +0x1c8" >&2
+          exit 2
+
+        resources:
+          requests:
+            memory: 64Mi
+            cpu: 50m
+          limits:
+            memory: 256Mi
+            cpu: 500m

@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: order-processor
+  namespace: sandbox
+  labels:
+    app: order-processor
+    version: v4.1.0
+    team: commerce
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: order-processor
+
+  template:
+    metadata:
+      labels:
+        app: order-processor
+        version: v4.1.0
+
+    spec:
+      initContainers:
+      - name: db-migrate
+        image: busybox:1.36
+
+        command:
+        - sh
+        - -c
+        - |
+          echo "[db-migrate] running pending migrations..."
+          sleep 3
+          echo "[db-migrate] applying V42__add_order_index.sql" >&2
+          echo "[db-migrate] ERROR: column 'customer_id' of relation 'orders' already exists" >&2
+          exit 1
+
+        resources:
+          requests:
+            memory: 16Mi
+            cpu: 10m
+          limits:
+            memory: 64Mi
+            cpu: 100m
+
+      containers:
+      - name: order-processor
+        image: busybox:1.36
+
+        command:
+        - sh
+        - -c
+        - |
+          echo "[order-processor] starting"
+          sleep infinity
+
+        resources:
+          requests:
+            memory: 32Mi
+            cpu: 10m
+          limits:
+            memory: 128Mi
+            cpu: 200m
