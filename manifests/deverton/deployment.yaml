@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: deverton
+  namespace: sandbox
+  labels:
+    app: deverton
+    version: v1.0.0
+    team: backend
+    failure-mode: OOMKilled
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: deverton
+
+  template:
+    metadata:
+      labels:
+        app: deverton
+        version: v1.0.0
+
+    spec:
+      containers:
+      - name: deverton
+        image: python:3.11-slim
+
+        command:
+        - python3
+        - -c
+        - |
+          import time
+          print("[deverton] starting up...", flush=True)
+          print("[deverton] loading model weights into memory...", flush=True)
+          time.sleep(2)
+          print("[deverton] allocating request buffers...", flush=True)
+          data = []
+          chunk_size = 10 * 1024 * 1024  # 10 MB per chunk
+          while True:
+              chunk = bytearray(chunk_size)
+              # Write to every 4KB page to force real physical RAM allocation
+              for i in range(0, chunk_size, 4096):
+                  chunk[i] = (i // 4096) % 256
+              data.append(chunk)
+              print(f"[deverton] rss={len(data) * 10}MB allocated...", flush=True)
+              time.sleep(0.1)
+
+        resources:
+          requests:
+            memory: 64Mi
+            cpu: 100m
+          limits:
+            memory: 128Mi
+            cpu: 500m
