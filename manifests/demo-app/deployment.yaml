@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: demo-app
-        image: nginx
+        image: nginx:latest
 
         ports:
         - containerPort: 80
