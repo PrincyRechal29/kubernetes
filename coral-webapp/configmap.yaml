@@ -1,0 +1,2715 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coral-webapp-config
+  namespace: coral-webapp
+data:
+  APP_NAME: "httpd-production-webapp"
+  ENVIRONMENT: "production"
+  LOG_LEVEL: "warn"
+  APP_PORT: "80"
+  APP_VERSION: "1.0.0"
+
+  princy.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <meta name="description" content="Princy Rechal — DevOps & Cloud Engineer portfolio, projects, experience and skills." />
+      <title>Princy Rechal &mdash; Portfolio</title>
+
+      <style>
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+        :root {
+          --bg:      #030711;
+          --surface: rgba(255,255,255,0.05);
+          --border:  rgba(255,255,255,0.1);
+          --blue:    #3b82f6;
+          --cyan:    #06b6d4;
+          --purple:  #8b5cf6;
+          --pink:    #ec4899;
+          --green:   #10b981;
+          --amber:   #f59e0b;
+          --red:     #ef4444;
+          --text:    #cbd5e1;
+          --muted:   #64748b;
+          --white:   #f1f5f9;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+          background: var(--bg);
+          color: var(--white);
+          font-family: 'Segoe UI', system-ui, sans-serif;
+          overflow-x: hidden;
+        }
+
+        /* ── Canvas background ────────────────────────── */
+        #bg-canvas {
+          position: fixed;
+          inset: 0;
+          z-index: 0;
+          pointer-events: none;
+          background:
+            radial-gradient(ellipse 700px 400px at 10% 20%, rgba(59,130,246,0.12) 0%, transparent 70%),
+            radial-gradient(ellipse 600px 400px at 90% 80%, rgba(139,92,246,0.10) 0%, transparent 70%),
+            radial-gradient(ellipse 400px 300px at 60% 40%, rgba(236,72,153,0.07) 0%, transparent 70%);
+        }
+
+        /* grid overlay */
+        body::before {
+          content: '';
+          position: fixed;
+          inset: 0;
+          z-index: 0;
+          pointer-events: none;
+          background-image:
+            linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+          background-size: 48px 48px;
+        }
+
+        /* ── Layout ───────────────────────────────────── */
+        .wrap {
+          position: relative;
+          z-index: 1;
+          width: min(1200px, 92%);
+          margin: 0 auto;
+        }
+
+        section { padding: 96px 0; }
+
+        .pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 6px 16px;
+          border-radius: 999px;
+          border: 1px solid var(--border);
+          background: var(--surface);
+          font-size: 12px;
+          color: var(--muted);
+          letter-spacing: 1px;
+          text-transform: uppercase;
+          margin-bottom: 20px;
+        }
+
+        .pill-dot {
+          width: 6px; height: 6px;
+          border-radius: 50%;
+          background: var(--cyan);
+          box-shadow: 0 0 6px var(--cyan);
+        }
+
+        .section-heading {
+          font-size: clamp(28px, 3.5vw, 46px);
+          font-weight: 800;
+          line-height: 1.12;
+          margin-bottom: 16px;
+        }
+
+        .grad { background: linear-gradient(135deg, var(--cyan), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .grad2 { background: linear-gradient(135deg, var(--pink), var(--amber)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .grad3 { background: linear-gradient(135deg, var(--green), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .section-sub {
+          font-size: 16px;
+          color: var(--text);
+          line-height: 1.8;
+          max-width: 560px;
+          margin-bottom: 56px;
+        }
+
+        /* ── Navbar ───────────────────────────────────── */
+        nav {
+          position: sticky;
+          top: 0;
+          z-index: 200;
+          height: 68px;
+          background: rgba(3,7,17,0.8);
+          backdrop-filter: blur(24px);
+          border-bottom: 1px solid var(--border);
+          display: flex;
+          align-items: center;
+        }
+
+        .nav-inner {
+          width: min(1200px, 92%);
+          margin: 0 auto;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .nav-logo {
+          font-size: 18px;
+          font-weight: 800;
+          background: linear-gradient(90deg, var(--cyan), var(--purple));
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          text-decoration: none;
+        }
+
+        .nav-links { display: flex; gap: 28px; align-items: center; }
+
+        .nav-links a {
+          text-decoration: none;
+          font-size: 14px;
+          color: var(--muted);
+          transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--white); }
+
+        .nav-back {
+          padding: 7px 18px;
+          border-radius: 8px;
+          border: 1px solid var(--border);
+          font-size: 13px;
+          color: var(--white);
+          text-decoration: none;
+          background: var(--surface);
+          transition: border-color 0.2s;
+        }
+
+        .nav-back:hover { border-color: var(--cyan); }
+
+        /* ── Hero ─────────────────────────────────────── */
+        #hero {
+          min-height: calc(100vh - 68px);
+          display: flex;
+          align-items: center;
+          padding: 0;
+        }
+
+        .hero-grid {
+          display: grid;
+          grid-template-columns: 1fr 420px;
+          gap: 64px;
+          align-items: center;
+          width: min(1200px, 92%);
+          margin: 0 auto;
+        }
+
+        .hero-eyebrow {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 28px;
+          flex-wrap: wrap;
+        }
+
+        .status-badge {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 5px 12px;
+          border-radius: 999px;
+          border: 1px solid rgba(16,185,129,0.3);
+          background: rgba(16,185,129,0.08);
+          font-size: 12px;
+          color: var(--green);
+        }
+
+        .status-dot {
+          width: 7px; height: 7px;
+          border-radius: 50%;
+          background: var(--green);
+          animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+          0%,100% { opacity:1; box-shadow: 0 0 6px var(--green); }
+          50%      { opacity:0.4; box-shadow: none; }
+        }
+
+        .hero-name {
+          font-size: clamp(48px, 6vw, 80px);
+          font-weight: 900;
+          line-height: 1.02;
+          margin-bottom: 12px;
+          letter-spacing: -2px;
+        }
+
+        .hero-role {
+          font-size: clamp(22px, 2.5vw, 32px);
+          font-weight: 700;
+          margin-bottom: 24px;
+          background: linear-gradient(90deg, var(--cyan), var(--purple), var(--pink));
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+
+        .hero-bio {
+          font-size: 17px;
+          color: var(--text);
+          line-height: 1.85;
+          max-width: 560px;
+          margin-bottom: 40px;
+        }
+
+        .hero-cta { display: flex; gap: 14px; flex-wrap: wrap; }
+
+        .btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 13px 26px;
+          border-radius: 10px;
+          font-size: 14px;
+          font-weight: 600;
+          text-decoration: none;
+          transition: transform 0.2s, box-shadow 0.2s;
+          cursor: pointer;
+          border: none;
+        }
+
+        .btn-cyan {
+          background: linear-gradient(135deg, var(--cyan), var(--blue));
+          color: white;
+          box-shadow: 0 0 20px rgba(6,182,212,0.35);
+        }
+
+        .btn-cyan:hover { transform: translateY(-2px); box-shadow: 0 0 36px rgba(6,182,212,0.55); }
+
+        .btn-outline {
+          border: 1px solid var(--border);
+          color: var(--white);
+          background: var(--surface);
+        }
+
+        .btn-outline:hover { border-color: var(--cyan); transform: translateY(-2px); }
+
+        /* Profile card */
+        .profile-card {
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: 24px;
+          padding: 36px;
+          backdrop-filter: blur(16px);
+          box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+        }
+
+        .avatar-ring {
+          width: 96px; height: 96px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--cyan), var(--purple), var(--pink));
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 40px;
+          margin: 0 auto 20px;
+          box-shadow: 0 0 30px rgba(6,182,212,0.3);
+        }
+
+        .profile-name { font-size: 20px; font-weight: 800; text-align: center; margin-bottom: 4px; }
+        .profile-title { font-size: 13px; color: var(--cyan); text-align: center; margin-bottom: 24px; }
+
+        .profile-stats {
+          display: grid;
+          grid-template-columns: repeat(3,1fr);
+          gap: 1px;
+          background: var(--border);
+          border-radius: 12px;
+          overflow: hidden;
+          margin-bottom: 24px;
+        }
+
+        .pstat {
+          background: var(--bg);
+          padding: 16px 8px;
+          text-align: center;
+        }
+
+        .pstat-num { font-size: 22px; font-weight: 800; color: var(--white); }
+        .pstat-lbl { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+        .profile-links { display: flex; flex-direction: column; gap: 10px; }
+
+        .profile-link {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 14px;
+          border-radius: 10px;
+          border: 1px solid var(--border);
+          background: rgba(255,255,255,0.03);
+          font-size: 13px;
+          color: var(--text);
+          text-decoration: none;
+          transition: border-color 0.2s, color 0.2s;
+        }
+
+        .profile-link:hover { border-color: var(--cyan); color: var(--white); }
+        .profile-link-icon { font-size: 16px; }
+
+        /* ── Project grid ─────────────────────────────── */
+        .projects-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 24px;
+        }
+
+        .project-card {
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: 18px;
+          padding: 28px;
+          display: flex;
+          flex-direction: column;
+          transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+        }
+
+        .project-card:hover {
+          transform: translateY(-5px);
+          border-color: rgba(6,182,212,0.35);
+          box-shadow: 0 16px 48px rgba(6,182,212,0.1);
+        }
+
+        .project-card.featured {
+          grid-column: span 2;
+          flex-direction: row;
+          gap: 36px;
+          align-items: flex-start;
+        }
+
+        .project-header {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          margin-bottom: 14px;
+        }
+
+        .project-icon {
+          width: 48px; height: 48px;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 22px;
+          flex-shrink: 0;
+        }
+
+        .ic-blue   { background: rgba(59,130,246,0.15);  }
+        .ic-purple { background: rgba(139,92,246,0.15);  }
+        .ic-green  { background: rgba(16,185,129,0.15);  }
+        .ic-amber  { background: rgba(245,158,11,0.15);  }
+        .ic-pink   { background: rgba(236,72,153,0.15);  }
+        .ic-red    { background: rgba(239,68,68,0.15);   }
+        .ic-cyan   { background: rgba(6,182,212,0.15);   }
+
+        .project-status {
+          padding: 4px 10px;
+          border-radius: 6px;
+          font-size: 11px;
+          font-weight: 600;
+        }
+
+        .status-live { background: rgba(16,185,129,0.15); color: var(--green); }
+        .status-wip  { background: rgba(245,158,11,0.15); color: var(--amber); }
+        .status-done { background: rgba(59,130,246,0.15); color: var(--blue);  }
+
+        .project-title { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+        .project-desc  { font-size: 14px; color: var(--text); line-height: 1.75; flex: 1; }
+
+        .project-tags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+          margin-top: 18px;
+        }
+
+        .tag {
+          padding: 4px 10px;
+          border-radius: 6px;
+          font-size: 11px;
+          background: rgba(255,255,255,0.06);
+          border: 1px solid var(--border);
+          color: var(--muted);
+        }
+
+        .project-meta {
+          display: flex;
+          gap: 16px;
+          margin-top: 16px;
+          padding-top: 16px;
+          border-top: 1px solid var(--border);
+          font-size: 12px;
+          color: var(--muted);
+        }
+
+        .project-meta span { display: flex; align-items: center; gap: 5px; }
+
+        /* Featured extras */
+        .featured-left { flex: 1; }
+        .featured-right { width: 260px; flex-shrink: 0; }
+
+        .featured-stat-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+        }
+
+        .fstat {
+          background: rgba(255,255,255,0.04);
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          padding: 16px;
+          text-align: center;
+        }
+
+        .fstat-val { font-size: 20px; font-weight: 800; color: var(--cyan); }
+        .fstat-lbl { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+        /* ── Timeline ─────────────────────────────────── */
+        #experience { background: rgba(255,255,255,0.015); }
+
+        .timeline { position: relative; padding-left: 36px; }
+
+        .timeline::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 8px;
+          bottom: 8px;
+          width: 2px;
+          background: linear-gradient(to bottom, var(--cyan), var(--purple), var(--pink));
+          border-radius: 2px;
+        }
+
+        .tl-item {
+          position: relative;
+          margin-bottom: 48px;
+        }
+
+        .tl-item:last-child { margin-bottom: 0; }
+
+        .tl-dot {
+          position: absolute;
+          left: -43px;
+          top: 4px;
+          width: 14px; height: 14px;
+          border-radius: 50%;
+          background: var(--bg);
+          border: 2px solid var(--cyan);
+          box-shadow: 0 0 12px rgba(6,182,212,0.4);
+        }
+
+        .tl-dot.purple { border-color: var(--purple); box-shadow: 0 0 12px rgba(139,92,246,0.4); }
+        .tl-dot.pink   { border-color: var(--pink);   box-shadow: 0 0 12px rgba(236,72,153,0.4); }
+
+        .tl-period {
+          font-size: 12px;
+          color: var(--muted);
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          margin-bottom: 8px;
+        }
+
+        .tl-role { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+        .tl-company { font-size: 14px; color: var(--cyan); margin-bottom: 14px; }
+
+        .tl-body {
+          font-size: 14px;
+          color: var(--text);
+          line-height: 1.8;
+          margin-bottom: 16px;
+        }
+
+        .tl-bullets { list-style: none; }
+
+        .tl-bullets li {
+          position: relative;
+          padding-left: 18px;
+          font-size: 14px;
+          color: var(--text);
+          line-height: 1.7;
+          margin-bottom: 6px;
+        }
+
+        .tl-bullets li::before {
+          content: '▸';
+          position: absolute;
+          left: 0;
+          color: var(--cyan);
+          font-size: 12px;
+          top: 3px;
+        }
+
+        /* ── Skills ───────────────────────────────────── */
+        .skills-outer {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 28px;
+        }
+
+        .skill-group {
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: 18px;
+          padding: 28px;
+        }
+
+        .skill-group-title {
+          font-size: 13px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          color: var(--muted);
+          margin-bottom: 20px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .skill-list { list-style: none; }
+
+        .skill-item {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 14px;
+        }
+
+        .skill-item:last-child { margin-bottom: 0; }
+
+        .skill-name { font-size: 14px; color: var(--text); }
+
+        .skill-bar-wrap {
+          width: 120px;
+          height: 6px;
+          background: rgba(255,255,255,0.08);
+          border-radius: 6px;
+          overflow: hidden;
+        }
+
+        .skill-bar { height: 100%; border-radius: 6px; }
+        .bar-cyan   { background: linear-gradient(90deg, var(--cyan), var(--blue)); }
+        .bar-purple { background: linear-gradient(90deg, var(--purple), var(--pink)); }
+        .bar-green  { background: linear-gradient(90deg, var(--green), var(--cyan)); }
+
+        /* ── Certifications ───────────────────────────── */
+        #certs { background: rgba(255,255,255,0.015); }
+
+        .certs-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 20px;
+        }
+
+        .cert-card {
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: 16px;
+          padding: 24px;
+          transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .cert-card:hover { transform: translateY(-4px); border-color: rgba(139,92,246,0.4); }
+
+        .cert-issuer { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .cert-name   { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+        .cert-date   { font-size: 12px; color: var(--purple); }
+
+        .cert-badge {
+          width: 40px; height: 40px;
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 20px;
+          margin-bottom: 16px;
+        }
+
+        /* ── OSS / Blog ───────────────────────────────── */
+        .oss-list { display: flex; flex-direction: column; gap: 16px; }
+
+        .oss-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 20px;
+          padding: 22px;
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: 14px;
+          transition: border-color 0.2s;
+        }
+
+        .oss-item:hover { border-color: rgba(6,182,212,0.35); }
+
+        .oss-icon { font-size: 28px; flex-shrink: 0; }
+        .oss-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+        .oss-desc  { font-size: 13px; color: var(--text); line-height: 1.7; }
+        .oss-meta  { display: flex; gap: 14px; margin-top: 10px; font-size: 12px; color: var(--muted); }
+
+        /* ── Blog / Articles ──────────────────────────── */
+        .articles-grid {
+          display: grid;
+          grid-template-columns: repeat(3,1fr);
+          gap: 20px;
+        }
+
+        .article-card {
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: 14px;
+          padding: 24px;
+          transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .article-card:hover { transform: translateY(-4px); border-color: rgba(236,72,153,0.35); }
+
+        .article-tag { font-size: 11px; color: var(--pink); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+        .article-title { font-size: 16px; font-weight: 700; margin-bottom: 10px; line-height: 1.4; }
+        .article-desc { font-size: 13px; color: var(--text); line-height: 1.7; }
+        .article-footer { display: flex; justify-content: space-between; margin-top: 16px; font-size: 12px; color: var(--muted); }
+
+        /* ── Contact ──────────────────────────────────── */
+        .contact-box {
+          background: linear-gradient(135deg, rgba(6,182,212,0.08), rgba(139,92,246,0.08));
+          border: 1px solid rgba(139,92,246,0.25);
+          border-radius: 28px;
+          padding: 72px;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 72px;
+          align-items: center;
+        }
+
+        .contact-heading { font-size: clamp(28px, 3vw, 44px); font-weight: 800; line-height: 1.1; margin-bottom: 16px; }
+        .contact-sub { font-size: 15px; color: var(--text); line-height: 1.8; margin-bottom: 32px; }
+
+        .contact-list { list-style: none; }
+
+        .contact-list li {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 14px 0;
+          border-bottom: 1px solid var(--border);
+          font-size: 14px;
+          color: var(--text);
+        }
+
+        .contact-list li:last-child { border-bottom: none; }
+        .contact-list li span:first-child { font-size: 20px; }
+
+        .contact-right { display: flex; flex-direction: column; gap: 14px; }
+
+        .contact-card {
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: 14px;
+          padding: 20px 24px;
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          text-decoration: none;
+          transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .contact-card:hover { border-color: var(--cyan); transform: translateX(4px); }
+        .contact-card-icon { font-size: 24px; }
+        .contact-card-title { font-size: 14px; font-weight: 600; color: var(--white); }
+        .contact-card-sub   { font-size: 12px; color: var(--muted); }
+        .contact-card-arrow { margin-left: auto; color: var(--muted); }
+
+        /* ── Footer ───────────────────────────────────── */
+        footer {
+          position: relative;
+          z-index: 1;
+          border-top: 1px solid var(--border);
+          padding: 40px 0;
+        }
+
+        .footer-inner {
+          width: min(1200px, 92%);
+          margin: 0 auto;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 16px;
+          font-size: 13px;
+          color: var(--muted);
+        }
+
+        .footer-inner a { color: var(--cyan); text-decoration: none; }
+        .footer-inner a:hover { text-decoration: underline; }
+
+        /* ── Responsive ───────────────────────────────── */
+        @media (max-width: 1024px) {
+          .hero-grid     { grid-template-columns: 1fr; }
+          .projects-grid { grid-template-columns: 1fr; }
+          .project-card.featured { grid-column: 1; flex-direction: column; }
+          .featured-right { width: 100%; }
+          .skills-outer  { grid-template-columns: 1fr 1fr; }
+          .certs-grid    { grid-template-columns: 1fr 1fr; }
+          .articles-grid { grid-template-columns: 1fr 1fr; }
+          .contact-box   { grid-template-columns: 1fr; padding: 48px 32px; gap: 40px; }
+        }
+
+        @media (max-width: 640px) {
+          nav .nav-links { display: none; }
+          .skills-outer  { grid-template-columns: 1fr; }
+          .certs-grid    { grid-template-columns: 1fr; }
+          .articles-grid { grid-template-columns: 1fr; }
+        }
+      </style>
+    </head>
+
+    <body>
+      <div id="bg-canvas"></div>
+
+      <!-- ── Navbar ─────────────────────────────────────── -->
+      <nav>
+        <div class="nav-inner">
+          <a href="/" class="nav-logo">PRINCY.dev</a>
+          <div class="nav-links">
+            <a href="#projects">Projects</a>
+            <a href="#experience">Experience</a>
+            <a href="#skills">Skills</a>
+            <a href="#certs">Certs</a>
+            <a href="#blog">Blog</a>
+            <a href="#contact">Contact</a>
+            <a href="/" class="nav-back">&#x2190; Home</a>
+          </div>
+        </div>
+      </nav>
+
+      <!-- ── Hero ───────────────────────────────────────── -->
+      <section id="hero">
+        <div class="hero-grid">
+
+          <div>
+            <div class="hero-eyebrow">
+              <div class="status-badge">
+                <span class="status-dot"></span>
+                Open to opportunities
+              </div>
+              <div class="pill"><span class="pill-dot"></span>Portfolio &bull; 2026</div>
+            </div>
+
+            <h1 class="hero-name">Princy<br/>Rechal</h1>
+            <div class="hero-role">DevOps &amp; Cloud Engineer</div>
+
+            <p class="hero-bio">
+              I architect and operate cloud-native platforms on Kubernetes — from pipeline
+              automation and GitOps workflows to observability stacks and zero-downtime
+              deployments. I care deeply about developer experience, reliability, and
+              building infrastructure that scales without drama.
+            </p>
+
+            <div class="hero-cta">
+              <a href="#projects" class="btn btn-cyan">&#x1F680; View Projects</a>
+              <a href="#contact"  class="btn btn-outline">&#x1F4E8; Get in Touch</a>
+            </div>
+          </div>
+
+          <div>
+            <div class="profile-card">
+              <div class="avatar-ring">&#x1F469;&#x200D;&#x1F4BB;</div>
+              <div class="profile-name">Princy Rechal</div>
+              <div class="profile-title">DevOps &amp; Cloud Engineer &bull; India</div>
+
+              <div class="profile-stats">
+                <div class="pstat">
+                  <div class="pstat-num">3+</div>
+                  <div class="pstat-lbl">Years Exp.</div>
+                </div>
+                <div class="pstat">
+                  <div class="pstat-num">12</div>
+                  <div class="pstat-lbl">Projects</div>
+                </div>
+                <div class="pstat">
+                  <div class="pstat-num">5</div>
+                  <div class="pstat-lbl">Certs</div>
+                </div>
+              </div>
+
+              <div class="profile-links">
+                <a href="#" class="profile-link">
+                  <span class="profile-link-icon">&#x1F4BB;</span>
+                  github.com/princy-rechal
+                </a>
+                <a href="#" class="profile-link">
+                  <span class="profile-link-icon">&#x1F4BC;</span>
+                  linkedin.com/in/princy-rechal
+                </a>
+                <a href="#" class="profile-link">
+                  <span class="profile-link-icon">&#x1F4DD;</span>
+                  dev.to/princy
+                </a>
+                <a href="mailto:rechal2529@gmail.com" class="profile-link">
+                  <span class="profile-link-icon">&#x2709;&#xFE0F;</span>
+                  rechal2529@gmail.com
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ── Projects ───────────────────────────────────── -->
+      <section id="projects">
+        <div class="wrap">
+          <div class="pill"><span class="pill-dot"></span>Projects</div>
+          <h2 class="section-heading">Things I&rsquo;ve <span class="grad">Built &amp; Shipped</span></h2>
+          <p class="section-sub">
+            A selection of production deployments, internal tools, and open-source
+            contributions that span the full DevOps lifecycle.
+          </p>
+
+          <div class="projects-grid">
+
+            <!-- Featured -->
+            <div class="project-card featured">
+              <div class="featured-left">
+                <div class="project-header">
+                  <div class="project-icon ic-cyan">&#x1F433;</div>
+                  <span class="project-status status-live">&#x25CF; Live</span>
+                </div>
+                <div class="project-title">Kubernetes Production Platform</div>
+                <div class="project-desc">
+                  End-to-end GitOps platform running on a self-managed Kubernetes cluster.
+                  Includes ArgoCD for continuous delivery, Prometheus + Grafana for full-stack
+                  observability, cert-manager for TLS automation, and Karpenter for node
+                  autoscaling. Serving multiple microservices with zero-downtime rolling
+                  deployments, enforced resource quotas, and Network Policies per namespace.
+                </div>
+                <div class="project-tags">
+                  <span class="tag">Kubernetes</span>
+                  <span class="tag">ArgoCD</span>
+                  <span class="tag">Prometheus</span>
+                  <span class="tag">Grafana</span>
+                  <span class="tag">Karpenter</span>
+                  <span class="tag">cert-manager</span>
+                  <span class="tag">Helm</span>
+                </div>
+                <div class="project-meta">
+                  <span>&#x1F31F; Featured</span>
+                  <span>&#x1F4C5; Jan 2026</span>
+                  <span>&#x1F465; Team of 3</span>
+                </div>
+              </div>
+              <div class="featured-right">
+                <div class="featured-stat-grid">
+                  <div class="fstat">
+                    <div class="fstat-val">99.9%</div>
+                    <div class="fstat-lbl">Uptime</div>
+                  </div>
+                  <div class="fstat">
+                    <div class="fstat-val">8</div>
+                    <div class="fstat-lbl">Services</div>
+                  </div>
+                  <div class="fstat">
+                    <div class="fstat-val">&lt;2s</div>
+                    <div class="fstat-lbl">Deploy time</div>
+                  </div>
+                  <div class="fstat">
+                    <div class="fstat-val">0</div>
+                    <div class="fstat-lbl">Incidents</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="project-card">
+              <div class="project-header">
+                <div class="project-icon ic-amber">&#x1F6E0;&#xFE0F;</div>
+                <span class="project-status status-live">&#x25CF; Live</span>
+              </div>
+              <div class="project-title">CI/CD Pipeline Factory</div>
+              <div class="project-desc">
+                Reusable GitHub Actions workflows packaged as a monorepo template.
+                Supports multi-arch Docker builds, Trivy image scanning, Helm chart
+                packaging, and automatic Kubernetes rollouts gated on smoke tests.
+              </div>
+              <div class="project-tags">
+                <span class="tag">GitHub Actions</span>
+                <span class="tag">Docker</span>
+                <span class="tag">Trivy</span>
+                <span class="tag">Helm</span>
+              </div>
+              <div class="project-meta">
+                <span>&#x1F4C5; Oct 2025</span>
+                <span>&#x2605; 47 stars</span>
+              </div>
+            </div>
+
+            <div class="project-card">
+              <div class="project-header">
+                <div class="project-icon ic-purple">&#x1F4CA;</div>
+                <span class="project-status status-live">&#x25CF; Live</span>
+              </div>
+              <div class="project-title">Observability Stack</div>
+              <div class="project-desc">
+                Full LGTM stack (Loki, Grafana, Tempo, Mimir) deployed on Kubernetes via
+                Helm. Custom dashboards, multi-tenant alerting rules, and PagerDuty
+                integration for on-call automation.
+              </div>
+              <div class="project-tags">
+                <span class="tag">Loki</span>
+                <span class="tag">Grafana</span>
+                <span class="tag">Tempo</span>
+                <span class="tag">Mimir</span>
+                <span class="tag">Alertmanager</span>
+              </div>
+              <div class="project-meta">
+                <span>&#x1F4C5; Aug 2025</span>
+                <span>&#x1F527; Self-hosted</span>
+              </div>
+            </div>
+
+            <div class="project-card">
+              <div class="project-header">
+                <div class="project-icon ic-green">&#x1F30F;</div>
+                <span class="project-status status-wip">&#x25D4; In Progress</span>
+              </div>
+              <div class="project-title">Terraform AWS Blueprint</div>
+              <div class="project-desc">
+                Opinionated Terraform modules for provisioning production-grade AWS EKS
+                clusters with VPC, IAM IRSA, S3 remote state, and GitHub OIDC
+                authentication — no long-lived access keys.
+              </div>
+              <div class="project-tags">
+                <span class="tag">Terraform</span>
+                <span class="tag">AWS EKS</span>
+                <span class="tag">IRSA</span>
+                <span class="tag">OIDC</span>
+              </div>
+              <div class="project-meta">
+                <span>&#x1F4C5; 2026</span>
+                <span>&#x1F527; WIP</span>
+              </div>
+            </div>
+
+            <div class="project-card">
+              <div class="project-header">
+                <div class="project-icon ic-pink">&#x1F4E6;</div>
+                <span class="project-status status-done">&#x2714; Shipped</span>
+              </div>
+              <div class="project-title">Kubernetes Manifest Library</div>
+              <div class="project-desc">
+                A curated collection of real-world Kubernetes YAML manifests covering
+                CrashLoopBackOff debugging, OOMKilled scenarios, resource tuning,
+                and GitOps patterns — used for training and demos.
+              </div>
+              <div class="project-tags">
+                <span class="tag">Kubernetes</span>
+                <span class="tag">YAML</span>
+                <span class="tag">GitOps</span>
+              </div>
+              <div class="project-meta">
+                <span>&#x1F4C5; 2025</span>
+                <span>&#x2605; 31 stars</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Experience ──────────────────────────────────── -->
+      <section id="experience">
+        <div class="wrap">
+          <div class="pill"><span class="pill-dot"></span>Experience</div>
+          <h2 class="section-heading">Where I&rsquo;ve <span class="grad2">Worked</span></h2>
+          <p class="section-sub">Roles that shaped how I think about infrastructure, reliability, and scale.</p>
+
+          <div class="timeline">
+
+            <div class="tl-item">
+              <div class="tl-dot"></div>
+              <div class="tl-period">Jan 2025 &mdash; Present</div>
+              <div class="tl-role">DevOps Engineer</div>
+              <div class="tl-company">&#x1F3E2; Cloud-First Startup &bull; Remote</div>
+              <div class="tl-body">
+                Leading the platform engineering team responsible for Kubernetes infrastructure,
+                CI/CD pipelines, and developer tooling across 4 product squads.
+              </div>
+              <ul class="tl-bullets">
+                <li>Migrated 12 microservices to Kubernetes with zero downtime using blue-green deployments.</li>
+                <li>Built a self-service GitOps portal backed by ArgoCD, cutting release cycle from 2 days to 20 minutes.</li>
+                <li>Implemented cost optimisation with Karpenter spot nodes, reducing EC2 spend by 38%.</li>
+                <li>Defined SLOs with Prometheus recording rules; established on-call rotations with Grafana OnCall.</li>
+              </ul>
+            </div>
+
+            <div class="tl-item">
+              <div class="tl-dot purple"></div>
+              <div class="tl-period">Jun 2023 &mdash; Dec 2024</div>
+              <div class="tl-role">Cloud Infrastructure Engineer</div>
+              <div class="tl-company">&#x1F3E2; Mid-size SaaS Company &bull; Hybrid</div>
+              <div class="tl-body">
+                Owned AWS infrastructure and Kubernetes cluster operations for a B2B SaaS platform
+                serving 200+ enterprise customers.
+              </div>
+              <ul class="tl-bullets">
+                <li>Provisioned multi-region EKS clusters with Terraform modules used across 3 teams.</li>
+                <li>Designed secrets rotation pipeline using AWS Secrets Manager and External Secrets Operator.</li>
+                <li>Reduced MTTR by 60% by building centralised log aggregation with Loki and Grafana.</li>
+                <li>Authored internal runbooks and incident response playbooks for the on-call team.</li>
+              </ul>
+            </div>
+
+            <div class="tl-item">
+              <div class="tl-dot pink"></div>
+              <div class="tl-period">Jan 2023 &mdash; May 2023</div>
+              <div class="tl-role">DevOps Intern</div>
+              <div class="tl-company">&#x1F3E2; IT Services Firm &bull; On-site</div>
+              <div class="tl-body">
+                First exposure to production Kubernetes, Docker, and CI/CD automation in a fast-paced
+                consulting environment supporting multiple client accounts.
+              </div>
+              <ul class="tl-bullets">
+                <li>Containerised 5 legacy applications and wrote Helm charts for each.</li>
+                <li>Set up GitHub Actions pipelines for automated Docker builds and ECR pushes.</li>
+                <li>Contributed Prometheus alert rules and Grafana dashboards used in production.</li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Skills ──────────────────────────────────────── -->
+      <section id="skills">
+        <div class="wrap">
+          <div class="pill"><span class="pill-dot"></span>Skills</div>
+          <h2 class="section-heading">Technical <span class="grad3">Toolkit</span></h2>
+          <p class="section-sub">Tools and technologies I use day-to-day to build, ship, and operate platforms.</p>
+
+          <div class="skills-outer">
+
+            <div class="skill-group">
+              <div class="skill-group-title">&#x2601;&#xFE0F; Cloud &amp; Orchestration</div>
+              <ul class="skill-list">
+                <li class="skill-item">
+                  <span class="skill-name">Kubernetes</span>
+                  <div class="skill-bar-wrap"><div class="skill-bar bar-cyan" style="width:92%"></div></div>
+                </li>
+                <li class="skill-item">
+                  <span class="skill-name">AWS (EKS, EC2, S3, IAM)</span>
+                  <div class="skill-bar-wrap"><div class="skill-bar bar-cyan" style="width:85%"></div></div>
+                </li>
+                <li class="skill-item">
+                  <span class="skill-name">Docker</span>
+                  <div class="skill-bar-wrap"><div class="skill-bar bar-cyan" style="width:95%"></div></div>
+                </li>
+                <li class="skill-item">
+                  <span class="skill-name">Helm</span>
+                  <div class="skill-bar-wrap"><div class="skill-bar bar-cyan" style="width:82%"></div></div>
+                </li>
+                <li class="skill-item">
+                  <span class="skill-name">GCP (GKE)</span>
+                  <div class="skill-bar-wrap"><div class="skill-bar bar-cyan" style="width:65%"></div></div>
+                </li>
+              </ul>
+            </div>
+
+            <div class="skill-group">
+              <div class="skill-group-title">&#x1F6E0;&#xFE0F; CI/CD &amp; IaC</div>
+              <ul class="skill-list">
+                <li class="skill-item">
+                  <span class="skill-name">GitHub Actions</span>
+                  <div class="skill-bar-wrap"><div class="skill-bar bar-purple" style="width:90%"></div></div>
+                </li>
+                <li class="skill-item">
+                  <span class="skill-name">ArgoCD</span>
+                  <div class="skill-bar-wrap"><div class="skill-bar bar-purple" style="width:85%"></div></div>
+                </li>
+                <li class="skill-item">
+                  <span class="skill-name">Terraform</span>
+                  <div class="skill-bar-wrap"><div class="skill-bar bar-purple" style="width:80%"></div></div>
+                </li>
+                <li class="skill-item">
+                  <span class="skill-name">Jenkins</span>
+                  <div class="skill-bar-wrap"><div class="skill-bar bar-purple" style="width:70%"></div></div>
+                </li>
+                <li class="skill-item">
+                  <span class="skill-name">Flux CD</span>
+                  <div class="skill-bar-wrap"><div class="skill-bar bar-purple" style="width:60%"></div></div>
+                </li>
+              </ul>
+            </div>
+
+            <div class="skill-group">
+              <div class="skill-group-title">&#x1F4CA; Observability &amp; Scripting</div>
+              <ul class="skill-list">
+                <li class="skill-item">
+                  <span class="skill-name">Prometheus</span>
+                  <div class="skill-bar-wrap"><div class="skill-bar bar-green" style="width:88%"></div></div>
+                </li>
+                <li class="skill-item">
+                  <span class="skill-name">Grafana</span>
+                  <div class="skill-bar-wrap"><div class="skill-bar bar-green" style="width:88%"></div></div>
+                </li>
+                <li class="skill-item">
+                  <span class="skill-name">Loki / ELK</span>
+                  <div class="skill-bar-wrap"><div class="skill-bar bar-green" style="width:75%"></div></div>
+                </li>
+                <li class="skill-item">
+                  <span class="skill-name">Bash / Python</span>
+                  <div class="skill-bar-wrap"><div class="skill-bar bar-green" style="width:80%"></div></div>
+                </li>
+                <li class="skill-item">
+                  <span class="skill-name">Go (basics)</span>
+                  <div class="skill-bar-wrap"><div class="skill-bar bar-green" style="width:45%"></div></div>
+                </li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Certifications ──────────────────────────────── -->
+      <section id="certs">
+        <div class="wrap">
+          <div class="pill"><span class="pill-dot"></span>Certifications</div>
+          <h2 class="section-heading">Credentials &amp; <span class="grad">Recognition</span></h2>
+          <p class="section-sub">Industry-recognised certifications validating hands-on expertise.</p>
+
+          <div class="certs-grid">
+            <div class="cert-card">
+              <div class="cert-badge ic-cyan">&#x1F3C6;</div>
+              <div class="cert-issuer">CNCF</div>
+              <div class="cert-name">Certified Kubernetes Administrator (CKA)</div>
+              <div class="cert-date">&#x1F4C5; Valid: 2024 &mdash; 2027</div>
+            </div>
+            <div class="cert-card">
+              <div class="cert-badge ic-amber">&#x1F3C6;</div>
+              <div class="cert-issuer">CNCF</div>
+              <div class="cert-name">Certified Kubernetes Application Developer (CKAD)</div>
+              <div class="cert-date">&#x1F4C5; Valid: 2024 &mdash; 2027</div>
+            </div>
+            <div class="cert-card">
+              <div class="cert-badge ic-purple">&#x1F3C6;</div>
+              <div class="cert-issuer">Amazon Web Services</div>
+              <div class="cert-name">AWS Certified Solutions Architect &mdash; Associate</div>
+              <div class="cert-date">&#x1F4C5; Valid: 2023 &mdash; 2026</div>
+            </div>
+            <div class="cert-card">
+              <div class="cert-badge ic-blue">&#x1F3C6;</div>
+              <div class="cert-issuer">HashiCorp</div>
+              <div class="cert-name">Terraform Associate (003)</div>
+              <div class="cert-date">&#x1F4C5; Valid: 2024 &mdash; 2026</div>
+            </div>
+            <div class="cert-card">
+              <div class="cert-badge ic-green">&#x1F3C6;</div>
+              <div class="cert-issuer">Linux Foundation</div>
+              <div class="cert-name">Certified GitOps Associate (CGOA)</div>
+              <div class="cert-date">&#x1F4C5; Valid: 2025 &mdash; 2027</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── OSS ────────────────────────────────────────── -->
+      <section id="oss">
+        <div class="wrap">
+          <div class="pill"><span class="pill-dot"></span>Open Source</div>
+          <h2 class="section-heading">Contributing to the <span class="grad2">Community</span></h2>
+          <p class="section-sub">Giving back through pull requests, documentation, and community tools.</p>
+
+          <div class="oss-list">
+            <div class="oss-item">
+              <span class="oss-icon">&#x1F433;</span>
+              <div>
+                <div class="oss-title">kubernetes/website — Documentation PR</div>
+                <div class="oss-desc">
+                  Improved the ConfigMap volumeMount subPath documentation with clearer
+                  examples covering the common case of injecting a single file into an
+                  existing directory. Merged after review from sig-docs.
+                </div>
+                <div class="oss-meta">
+                  <span>&#x2605; kubernetes/kubernetes</span>
+                  <span>&#x1F4C5; Mar 2025</span>
+                  <span>&#x2714; Merged</span>
+                </div>
+              </div>
+            </div>
+            <div class="oss-item">
+              <span class="oss-icon">&#x1F4CA;</span>
+              <div>
+                <div class="oss-title">grafana/helm-charts — Bug fix &amp; feature</div>
+                <div class="oss-desc">
+                  Fixed an issue where the Grafana sidecar did not properly reload dashboards
+                  from newly created ConfigMaps in separate namespaces. Added a namespace-scoped
+                  watch option with unit tests.
+                </div>
+                <div class="oss-meta">
+                  <span>&#x2605; grafana/helm-charts</span>
+                  <span>&#x1F4C5; Nov 2024</span>
+                  <span>&#x2714; Merged</span>
+                </div>
+              </div>
+            </div>
+            <div class="oss-item">
+              <span class="oss-icon">&#x1F527;</span>
+              <div>
+                <div class="oss-title">k8s-manifest-library — Author &amp; Maintainer</div>
+                <div class="oss-desc">
+                  Personal open-source repository of battle-tested Kubernetes YAML manifests
+                  demonstrating real-world failure modes (CrashLoopBackOff, OOMKilled, liveness
+                  probe failures) alongside their fixes. Used by 200+ learners.
+                </div>
+                <div class="oss-meta">
+                  <span>&#x2605; 31 stars</span>
+                  <span>&#x1F465; 8 forks</span>
+                  <span>&#x1F4C5; Ongoing</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Blog ───────────────────────────────────────── -->
+      <section id="blog">
+        <div class="wrap">
+          <div class="pill"><span class="pill-dot"></span>Writing</div>
+          <h2 class="section-heading">Latest <span class="grad3">Articles</span></h2>
+          <p class="section-sub">Practical guides, incident post-mortems, and deep dives into the DevOps toolchain.</p>
+
+          <div class="articles-grid">
+            <div class="article-card">
+              <div class="article-tag">Kubernetes</div>
+              <div class="article-title">Debugging CrashLoopBackOff: a systematic field guide</div>
+              <div class="article-desc">
+                A repeatable checklist for diagnosing every category of pod crash — from bad
+                image pulls to OOM kills and misconfigured probes.
+              </div>
+              <div class="article-footer">
+                <span>8 min read</span>
+                <span>Apr 2026</span>
+              </div>
+            </div>
+            <div class="article-card">
+              <div class="article-tag">GitOps</div>
+              <div class="article-title">ArgoCD in production: patterns that actually work</div>
+              <div class="article-desc">
+                Hard-won lessons from running ArgoCD at scale: app-of-apps, ApplicationSets,
+                RBAC design, and sync wave ordering for dependent resources.
+              </div>
+              <div class="article-footer">
+                <span>12 min read</span>
+                <span>Feb 2026</span>
+              </div>
+            </div>
+            <div class="article-card">
+              <div class="article-tag">Observability</div>
+              <div class="article-title">Building meaningful SLOs with Prometheus recording rules</div>
+              <div class="article-desc">
+                Step-by-step guide to defining error-budget burn alerts that page on signal,
+                not noise — with Grafana dashboard templates included.
+              </div>
+              <div class="article-footer">
+                <span>10 min read</span>
+                <span>Jan 2026</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Contact ────────────────────────────────────── -->
+      <section id="contact">
+        <div class="wrap">
+          <div class="contact-box">
+            <div>
+              <div class="pill"><span class="pill-dot"></span>Contact</div>
+              <h2 class="contact-heading">Let&rsquo;s Build Something <span class="grad">Great</span></h2>
+              <p class="contact-sub">
+                Whether you have a platform engineering challenge, a DevOps role to fill, or
+                just want to talk Kubernetes — my inbox is open.
+              </p>
+              <ul class="contact-list">
+                <li><span>&#x2709;&#xFE0F;</span> rechal2529@gmail.com</li>
+                <li><span>&#x1F4CD;</span> India &bull; Remote-friendly</li>
+                <li><span>&#x23F0;</span> Typically replies within 24 hours</li>
+                <li><span>&#x1F4BC;</span> Open to full-time &amp; contract roles</li>
+              </ul>
+            </div>
+            <div class="contact-right">
+              <a href="mailto:rechal2529@gmail.com" class="contact-card">
+                <span class="contact-card-icon">&#x2709;&#xFE0F;</span>
+                <div>
+                  <div class="contact-card-title">Send an Email</div>
+                  <div class="contact-card-sub">rechal2529@gmail.com</div>
+                </div>
+                <span class="contact-card-arrow">&#x2192;</span>
+              </a>
+              <a href="#" class="contact-card">
+                <span class="contact-card-icon">&#x1F4BB;</span>
+                <div>
+                  <div class="contact-card-title">GitHub</div>
+                  <div class="contact-card-sub">github.com/princy-rechal</div>
+                </div>
+                <span class="contact-card-arrow">&#x2192;</span>
+              </a>
+              <a href="#" class="contact-card">
+                <span class="contact-card-icon">&#x1F4BC;</span>
+                <div>
+                  <div class="contact-card-title">LinkedIn</div>
+                  <div class="contact-card-sub">linkedin.com/in/princy-rechal</div>
+                </div>
+                <span class="contact-card-arrow">&#x2192;</span>
+              </a>
+              <a href="#" class="contact-card">
+                <span class="contact-card-icon">&#x1F4DD;</span>
+                <div>
+                  <div class="contact-card-title">Read my Blog</div>
+                  <div class="contact-card-sub">dev.to/princy</div>
+                </div>
+                <span class="contact-card-arrow">&#x2192;</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Footer ─────────────────────────────────────── -->
+      <footer>
+        <div class="footer-inner">
+          <span>&copy; 2026 Princy Rechal &mdash; Deployed on Kubernetes &bull; Apache HTTPD &bull; <a href="/">Back to Home</a></span>
+          <span>Built with YAML, coffee, and a love for uptime.</span>
+        </div>
+      </footer>
+
+    </body>
+    </html>
+
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <meta name="description" content="Production-grade Kubernetes platform — Apache HTTPD deployment by Princy Rechal" />
+      <title>PRINCY.dev &mdash; Production Platform</title>
+
+      <style>
+        *, *::before, *::after {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        :root {
+          --blue:    #00d4ff;
+          --purple:  #6c63ff;
+          --pink:    #ff4ecd;
+          --green:   #00ff88;
+          --dark:    #050816;
+          --card-bg: rgba(255,255,255,0.06);
+          --border:  rgba(255,255,255,0.12);
+          --text:    #d9e3ff;
+          --muted:   #8ea0d8;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+          background: var(--dark);
+          color: white;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          overflow-x: hidden;
+        }
+
+        /* ── Animated background ────────────────────────── */
+        .bg-orbs {
+          position: fixed;
+          inset: 0;
+          z-index: 0;
+          pointer-events: none;
+          overflow: hidden;
+        }
+
+        .orb {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(100px);
+          opacity: 0.35;
+          animation: drift linear infinite alternate;
+        }
+
+        .orb-1 { width:420px; height:420px; background:var(--purple); top:-100px; left:-100px; animation-duration:18s; }
+        .orb-2 { width:500px; height:500px; background:var(--blue);   bottom:-150px; right:-100px; animation-duration:22s; }
+        .orb-3 { width:300px; height:300px; background:var(--pink);   top:45%; left:50%; animation-duration:14s; }
+        .orb-4 { width:250px; height:250px; background:var(--green);  top:20%; right:15%; animation-duration:16s; opacity:0.2; }
+
+        @keyframes drift {
+          from { transform: translate(0, 0) scale(1);   }
+          to   { transform: translate(50px, -60px) scale(1.1); }
+        }
+
+        /* ── Layout helpers ─────────────────────────────── */
+        .container {
+          position: relative;
+          z-index: 1;
+          width: min(1280px, 92%);
+          margin: 0 auto;
+        }
+
+        section { padding: 100px 0; }
+
+        .section-label {
+          display: inline-block;
+          padding: 8px 18px;
+          border-radius: 30px;
+          background: rgba(0,212,255,0.12);
+          color: var(--blue);
+          border: 1px solid rgba(0,212,255,0.3);
+          font-size: 13px;
+          letter-spacing: 1px;
+          text-transform: uppercase;
+          margin-bottom: 20px;
+        }
+
+        .section-title {
+          font-size: clamp(32px, 4vw, 52px);
+          line-height: 1.15;
+          margin-bottom: 18px;
+        }
+
+        .section-title span {
+          background: linear-gradient(90deg, var(--blue), var(--pink));
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+
+        .section-sub {
+          font-size: 17px;
+          color: var(--text);
+          line-height: 1.8;
+          max-width: 620px;
+        }
+
+        /* ── Navbar ─────────────────────────────────────── */
+        nav {
+          position: sticky;
+          top: 0;
+          z-index: 100;
+          padding: 0 8%;
+          height: 72px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          background: rgba(5,8,22,0.75);
+          backdrop-filter: blur(20px);
+          border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+          font-size: 24px;
+          font-weight: 800;
+          color: var(--blue);
+          letter-spacing: 2px;
+        }
+
+        .logo span { color: var(--pink); }
+
+        .nav-links { display: flex; gap: 32px; }
+
+        .nav-links a {
+          text-decoration: none;
+          color: var(--muted);
+          font-size: 15px;
+          transition: color 0.25s;
+        }
+
+        .nav-links a:hover { color: var(--blue); }
+
+        .nav-badge {
+          padding: 6px 14px;
+          border-radius: 8px;
+          background: linear-gradient(90deg, var(--blue), var(--purple));
+          color: white;
+          font-size: 13px;
+          font-weight: 600;
+          text-decoration: none;
+        }
+
+        /* ── Hero ───────────────────────────────────────── */
+        #hero {
+          min-height: calc(100vh - 72px);
+          display: flex;
+          align-items: center;
+          padding: 0;
+        }
+
+        .hero-inner {
+          position: relative;
+          z-index: 1;
+          width: min(1280px, 92%);
+          margin: 0 auto;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 60px;
+          align-items: center;
+        }
+
+        .hero-eyebrow {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 24px;
+        }
+
+        .live-dot {
+          width: 10px; height: 10px;
+          border-radius: 50%;
+          background: var(--green);
+          box-shadow: 0 0 10px var(--green);
+          animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+          0%,100% { box-shadow: 0 0 10px var(--green); }
+          50%      { box-shadow: 0 0 20px var(--green), 0 0 40px var(--green); }
+        }
+
+        .live-text { font-size: 13px; color: var(--green); letter-spacing: 1px; }
+
+        .hero-title {
+          font-size: clamp(40px, 5vw, 72px);
+          line-height: 1.08;
+          margin-bottom: 28px;
+          font-weight: 800;
+        }
+
+        .hero-title span {
+          background: linear-gradient(135deg, var(--blue), var(--purple), var(--pink));
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+
+        .hero-desc {
+          font-size: 18px;
+          line-height: 1.85;
+          color: var(--text);
+          margin-bottom: 40px;
+        }
+
+        .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+
+        .btn {
+          padding: 14px 30px;
+          border-radius: 12px;
+          font-size: 15px;
+          font-weight: 600;
+          text-decoration: none;
+          transition: transform 0.25s, box-shadow 0.25s;
+          display: inline-block;
+        }
+
+        .btn-primary {
+          background: linear-gradient(90deg, var(--blue), var(--purple));
+          color: white;
+          box-shadow: 0 0 24px rgba(0,212,255,0.45);
+        }
+
+        .btn-primary:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 0 40px rgba(0,212,255,0.7);
+        }
+
+        .btn-ghost {
+          border: 1px solid var(--border);
+          color: white;
+          background: var(--card-bg);
+        }
+
+        .btn-ghost:hover {
+          background: rgba(255,255,255,0.1);
+          transform: translateY(-2px);
+        }
+
+        /* Hero status card */
+        .hero-panel {
+          background: var(--card-bg);
+          border: 1px solid var(--border);
+          backdrop-filter: blur(20px);
+          border-radius: 28px;
+          padding: 36px;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+
+        .panel-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 28px;
+        }
+
+        .panel-title { font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+        .status-chip {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 5px 12px;
+          border-radius: 20px;
+          background: rgba(0,255,136,0.12);
+          border: 1px solid rgba(0,255,136,0.3);
+          font-size: 12px;
+          color: var(--green);
+        }
+
+        .metric-row {
+          margin-bottom: 22px;
+        }
+
+        .metric-row-header {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 9px;
+          font-size: 14px;
+          color: var(--muted);
+        }
+
+        .metric-row-header strong { color: white; }
+
+        .bar-track {
+          width: 100%;
+          height: 8px;
+          border-radius: 10px;
+          background: rgba(255,255,255,0.08);
+          overflow: hidden;
+        }
+
+        .bar-fill {
+          height: 100%;
+          border-radius: 10px;
+          background: linear-gradient(90deg, var(--blue), var(--purple));
+          position: relative;
+        }
+
+        .bar-fill::after {
+          content: '';
+          position: absolute;
+          right: 0; top: 0;
+          width: 12px; height: 100%;
+          background: white;
+          border-radius: 10px;
+          box-shadow: 0 0 10px var(--blue);
+          opacity: 0.8;
+        }
+
+        .panel-divider {
+          height: 1px;
+          background: var(--border);
+          margin: 24px 0;
+        }
+
+        .pod-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 8px;
+        }
+
+        .pod-chip {
+          padding: 8px;
+          border-radius: 10px;
+          background: rgba(0,255,136,0.08);
+          border: 1px solid rgba(0,255,136,0.2);
+          text-align: center;
+          font-size: 11px;
+          color: var(--green);
+        }
+
+        .pod-chip.warn {
+          background: rgba(255,200,0,0.08);
+          border-color: rgba(255,200,0,0.25);
+          color: #ffc800;
+        }
+
+        /* ── Stats bar ──────────────────────────────────── */
+        .stats-bar {
+          position: relative;
+          z-index: 1;
+          background: rgba(255,255,255,0.04);
+          border-top: 1px solid var(--border);
+          border-bottom: 1px solid var(--border);
+          padding: 40px 0;
+        }
+
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 0;
+        }
+
+        .stat-item {
+          text-align: center;
+          padding: 20px;
+          border-right: 1px solid var(--border);
+        }
+
+        .stat-item:last-child { border-right: none; }
+
+        .stat-number {
+          font-size: 42px;
+          font-weight: 800;
+          background: linear-gradient(90deg, var(--blue), var(--pink));
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          line-height: 1;
+          margin-bottom: 8px;
+        }
+
+        .stat-label { font-size: 14px; color: var(--muted); }
+
+        /* ── Features grid ──────────────────────────────── */
+        .features-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 24px;
+          margin-top: 60px;
+        }
+
+        .feature-card {
+          background: var(--card-bg);
+          border: 1px solid var(--border);
+          border-radius: 20px;
+          padding: 32px;
+          transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .feature-card:hover {
+          transform: translateY(-6px);
+          border-color: rgba(0,212,255,0.35);
+          box-shadow: 0 12px 40px rgba(0,212,255,0.12);
+        }
+
+        .feature-icon {
+          width: 52px; height: 52px;
+          border-radius: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 24px;
+          margin-bottom: 20px;
+        }
+
+        .icon-blue   { background: rgba(0,212,255,0.15);  }
+        .icon-purple { background: rgba(108,99,255,0.15); }
+        .icon-pink   { background: rgba(255,78,205,0.15); }
+        .icon-green  { background: rgba(0,255,136,0.15);  }
+        .icon-orange { background: rgba(255,165,0,0.15);  }
+        .icon-red    { background: rgba(255,80,80,0.15);  }
+
+        .feature-title {
+          font-size: 19px;
+          font-weight: 700;
+          margin-bottom: 12px;
+        }
+
+        .feature-desc {
+          font-size: 14px;
+          color: var(--text);
+          line-height: 1.75;
+        }
+
+        .feature-tags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-top: 18px;
+        }
+
+        .tag-chip {
+          padding: 4px 10px;
+          border-radius: 6px;
+          font-size: 11px;
+          background: rgba(255,255,255,0.08);
+          color: var(--muted);
+          border: 1px solid var(--border);
+        }
+
+        /* ── Architecture diagram ───────────────────────── */
+        #architecture { background: rgba(255,255,255,0.015); }
+
+        .arch-flow {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0;
+          margin-top: 60px;
+          flex-wrap: wrap;
+        }
+
+        .arch-node {
+          text-align: center;
+          padding: 28px 24px;
+          border-radius: 18px;
+          background: var(--card-bg);
+          border: 1px solid var(--border);
+          min-width: 140px;
+          transition: border-color 0.3s;
+        }
+
+        .arch-node:hover { border-color: rgba(0,212,255,0.4); }
+
+        .arch-node-icon { font-size: 32px; margin-bottom: 12px; }
+        .arch-node-name { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+        .arch-node-sub  { font-size: 11px; color: var(--muted); }
+
+        .arch-arrow {
+          font-size: 22px;
+          color: var(--blue);
+          margin: 0 12px;
+          opacity: 0.6;
+        }
+
+        /* ── Tech stack ─────────────────────────────────── */
+        .tech-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+          gap: 16px;
+          margin-top: 52px;
+        }
+
+        .tech-badge {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 16px 20px;
+          border-radius: 14px;
+          background: var(--card-bg);
+          border: 1px solid var(--border);
+          transition: border-color 0.25s, transform 0.25s;
+        }
+
+        .tech-badge:hover {
+          border-color: rgba(108,99,255,0.4);
+          transform: translateY(-3px);
+        }
+
+        .tech-logo { font-size: 28px; }
+
+        .tech-info-name  { font-size: 14px; font-weight: 600; }
+        .tech-info-label { font-size: 11px; color: var(--muted); }
+
+        /* ── Observability ──────────────────────────────── */
+        .obs-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 28px;
+          margin-top: 60px;
+        }
+
+        .obs-card {
+          background: var(--card-bg);
+          border: 1px solid var(--border);
+          border-radius: 20px;
+          padding: 32px;
+        }
+
+        .obs-card-title {
+          font-size: 16px;
+          font-weight: 700;
+          margin-bottom: 20px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .obs-metric-list { list-style: none; }
+
+        .obs-metric-list li {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 12px 0;
+          border-bottom: 1px solid var(--border);
+          font-size: 14px;
+        }
+
+        .obs-metric-list li:last-child { border-bottom: none; }
+
+        .obs-metric-list li span:first-child { color: var(--muted); }
+
+        .obs-value { font-weight: 600; }
+        .obs-value.good  { color: var(--green); }
+        .obs-value.warn  { color: #ffc800; }
+        .obs-value.blue  { color: var(--blue); }
+
+        /* Log terminal */
+        .log-terminal {
+          background: #0a0e1f;
+          border: 1px solid rgba(0,212,255,0.2);
+          border-radius: 14px;
+          padding: 20px;
+          font-family: 'Courier New', monospace;
+          font-size: 12px;
+          line-height: 1.9;
+          max-height: 240px;
+          overflow: hidden;
+        }
+
+        .log-line { display: block; }
+        .log-time  { color: var(--muted); margin-right: 10px; }
+        .log-level-info  { color: var(--blue); }
+        .log-level-ok    { color: var(--green); }
+        .log-level-warn  { color: #ffc800; }
+        .log-msg { color: #c8d8ff; }
+
+        /* ── Team / About ────────────────────────────────── */
+        #about { background: rgba(255,255,255,0.015); }
+
+        .about-inner {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 80px;
+          align-items: center;
+        }
+
+        .about-checklist { list-style: none; margin-top: 28px; }
+
+        .about-checklist li {
+          display: flex;
+          align-items: flex-start;
+          gap: 14px;
+          padding: 14px 0;
+          border-bottom: 1px solid var(--border);
+          font-size: 15px;
+          color: var(--text);
+          line-height: 1.6;
+        }
+
+        .about-checklist li:last-child { border-bottom: none; }
+
+        .check-icon {
+          flex-shrink: 0;
+          width: 22px; height: 22px;
+          border-radius: 50%;
+          background: rgba(0,255,136,0.15);
+          border: 1px solid rgba(0,255,136,0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 12px;
+          margin-top: 2px;
+        }
+
+        .about-card {
+          background: var(--card-bg);
+          border: 1px solid var(--border);
+          border-radius: 24px;
+          padding: 40px;
+        }
+
+        .about-avatar {
+          width: 80px; height: 80px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--blue), var(--purple));
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 32px;
+          margin-bottom: 20px;
+        }
+
+        .about-name { font-size: 26px; font-weight: 800; margin-bottom: 6px; }
+        .about-role { font-size: 14px; color: var(--blue); margin-bottom: 18px; }
+        .about-bio  { font-size: 14px; color: var(--text); line-height: 1.8; }
+
+        .skill-tags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-top: 22px;
+        }
+
+        .skill-tag {
+          padding: 6px 14px;
+          border-radius: 8px;
+          font-size: 12px;
+          background: rgba(108,99,255,0.15);
+          border: 1px solid rgba(108,99,255,0.3);
+          color: #a89fff;
+        }
+
+        /* ── CTA ────────────────────────────────────────── */
+        .cta-box {
+          background: linear-gradient(135deg, rgba(108,99,255,0.2), rgba(0,212,255,0.15));
+          border: 1px solid rgba(108,99,255,0.3);
+          border-radius: 28px;
+          padding: 72px 60px;
+          text-align: center;
+        }
+
+        .cta-box .section-title { font-size: clamp(28px, 3.5vw, 48px); }
+        .cta-box .section-sub   { margin: 0 auto 40px; }
+        .cta-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+        /* ── Footer ─────────────────────────────────────── */
+        footer {
+          position: relative;
+          z-index: 1;
+          background: rgba(255,255,255,0.03);
+          border-top: 1px solid var(--border);
+          padding: 60px 0 32px;
+        }
+
+        .footer-grid {
+          display: grid;
+          grid-template-columns: 2fr 1fr 1fr 1fr;
+          gap: 48px;
+          margin-bottom: 48px;
+        }
+
+        .footer-brand .logo { font-size: 22px; margin-bottom: 14px; display: block; }
+
+        .footer-brand p {
+          font-size: 14px;
+          color: var(--muted);
+          line-height: 1.75;
+          max-width: 280px;
+        }
+
+        .footer-col-title {
+          font-size: 13px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          color: white;
+          margin-bottom: 18px;
+        }
+
+        .footer-links { list-style: none; }
+
+        .footer-links li { margin-bottom: 10px; }
+
+        .footer-links a {
+          text-decoration: none;
+          color: var(--muted);
+          font-size: 14px;
+          transition: color 0.25s;
+        }
+
+        .footer-links a:hover { color: var(--blue); }
+
+        .footer-bottom {
+          border-top: 1px solid var(--border);
+          padding-top: 28px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 13px;
+          color: var(--muted);
+          flex-wrap: wrap;
+          gap: 12px;
+        }
+
+        .footer-bottom-right { display: flex; gap: 20px; }
+
+        /* ── Responsive ─────────────────────────────────── */
+        @media (max-width: 1024px) {
+          .hero-inner    { grid-template-columns: 1fr; }
+          .features-grid { grid-template-columns: repeat(2, 1fr); }
+          .stats-grid    { grid-template-columns: repeat(2, 1fr); }
+          .obs-grid      { grid-template-columns: 1fr; }
+          .about-inner   { grid-template-columns: 1fr; }
+          .footer-grid   { grid-template-columns: 1fr 1fr; }
+          .arch-flow     { gap: 12px; }
+          .arch-arrow    { display: none; }
+        }
+
+        @media (max-width: 640px) {
+          nav { padding: 0 5%; }
+          .nav-links { display: none; }
+          .features-grid { grid-template-columns: 1fr; }
+          .stats-grid    { grid-template-columns: 1fr 1fr; }
+          .footer-grid   { grid-template-columns: 1fr; }
+          .cta-box       { padding: 48px 24px; }
+        }
+      </style>
+    </head>
+
+    <body>
+
+      <!-- Animated background orbs -->
+      <div class="bg-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="orb orb-4"></div>
+      </div>
+
+      <!-- ── Navbar ──────────────────────────────────────── -->
+      <nav>
+        <div class="logo">PRINCY<span>.dev</span></div>
+        <div class="nav-links">
+          <a href="#features">Features</a>
+          <a href="#architecture">Architecture</a>
+          <a href="#stack">Tech Stack</a>
+          <a href="#observability">Observability</a>
+          <a href="#about">About</a>
+        </div>
+        <a href="#contact" class="nav-badge">Get in Touch</a>
+      </nav>
+
+      <!-- ── Hero ───────────────────────────────────────── -->
+      <section id="hero">
+        <div class="hero-inner">
+
+          <div class="hero-left">
+            <div class="hero-eyebrow">
+              <div class="live-dot"></div>
+              <span class="live-text">PRODUCTION &bull; APACHE HTTPD &bull; KUBERNETES</span>
+            </div>
+            <h1 class="hero-title">
+              Cloud-Native<br />
+              <span>Production Platform</span><br />
+              on Kubernetes
+            </h1>
+            <p class="hero-desc">
+              A fully production-grade web application deployed with Apache HTTPD on
+              Kubernetes — featuring zero-downtime rollouts, auto-scaling, secret
+              management, and GitOps-ready manifests. Built for reliability at scale.
+            </p>
+            <div class="hero-actions">
+              <a href="#architecture" class="btn btn-primary">View Architecture</a>
+              <a href="#features" class="btn btn-ghost">Explore Features</a>
+            </div>
+          </div>
+
+          <div class="hero-right">
+            <div class="hero-panel">
+              <div class="panel-header">
+                <span class="panel-title">Cluster Overview</span>
+                <span class="status-chip">
+                  <span class="live-dot" style="width:8px;height:8px;"></span>
+                  All Systems Healthy
+                </span>
+              </div>
+
+              <div class="metric-row">
+                <div class="metric-row-header">
+                  <span>Deployment Rollout</span>
+                  <strong>100%</strong>
+                </div>
+                <div class="bar-track"><div class="bar-fill" style="width:100%"></div></div>
+              </div>
+
+              <div class="metric-row">
+                <div class="metric-row-header">
+                  <span>Pod Readiness</span>
+                  <strong>3/3 Ready</strong>
+                </div>
+                <div class="bar-track"><div class="bar-fill" style="width:100%"></div></div>
+              </div>
+
+              <div class="metric-row">
+                <div class="metric-row-header">
+                  <span>CPU Utilization</span>
+                  <strong>34%</strong>
+                </div>
+                <div class="bar-track">
+                  <div class="bar-fill" style="width:34%; background:linear-gradient(90deg,#00ff88,#00d4ff);"></div>
+                </div>
+              </div>
+
+              <div class="metric-row">
+                <div class="metric-row-header">
+                  <span>Memory Usage</span>
+                  <strong>58%</strong>
+                </div>
+                <div class="bar-track">
+                  <div class="bar-fill" style="width:58%; background:linear-gradient(90deg,#6c63ff,#ff4ecd);"></div>
+                </div>
+              </div>
+
+              <div class="panel-divider"></div>
+
+              <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Pod Status (3 Replicas)</p>
+              <div class="pod-grid">
+                <div class="pod-chip">httpd-0<br/>&#x2714; Running</div>
+                <div class="pod-chip">httpd-1<br/>&#x2714; Running</div>
+                <div class="pod-chip">httpd-2<br/>&#x2714; Running</div>
+                <div class="pod-chip warn">HPA<br/>&#x25CF; Watching</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ── Stats bar ──────────────────────────────────── -->
+      <div class="stats-bar">
+        <div class="container">
+          <div class="stats-grid">
+            <div class="stat-item">
+              <div class="stat-number">99.9%</div>
+              <div class="stat-label">Uptime SLA</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">&lt;50ms</div>
+              <div class="stat-label">Avg. Latency (p50)</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">3</div>
+              <div class="stat-label">Replica Pods</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">0</div>
+              <div class="stat-label">Downtime Events</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Features ───────────────────────────────────── -->
+      <section id="features">
+        <div class="container">
+          <div class="section-label">Platform Capabilities</div>
+          <h2 class="section-title">Everything You Need for <span>Production</span></h2>
+          <p class="section-sub">
+            This deployment demonstrates enterprise patterns for running stateless web
+            applications reliably in Kubernetes at any scale.
+          </p>
+
+          <div class="features-grid">
+
+            <div class="feature-card">
+              <div class="feature-icon icon-blue">&#x1F4E6;</div>
+              <div class="feature-title">Zero-Downtime Deployments</div>
+              <div class="feature-desc">
+                Rolling update strategy ensures new pods are ready before old ones are
+                terminated. Max surge and max unavailable are tuned for continuous availability.
+              </div>
+              <div class="feature-tags">
+                <span class="tag-chip">RollingUpdate</span>
+                <span class="tag-chip">maxSurge: 1</span>
+                <span class="tag-chip">maxUnavailable: 0</span>
+              </div>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-icon icon-purple">&#x1F511;</div>
+              <div class="feature-title">Secret Management</div>
+              <div class="feature-desc">
+                Sensitive credentials are stored as Kubernetes Secrets and injected as
+                environment variables at runtime — never baked into the container image.
+              </div>
+              <div class="feature-tags">
+                <span class="tag-chip">Opaque Secrets</span>
+                <span class="tag-chip">RBAC</span>
+                <span class="tag-chip">Env Injection</span>
+              </div>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-icon icon-green">&#x2764;&#xFE0F;</div>
+              <div class="feature-title">Health Probes</div>
+              <div class="feature-desc">
+                Liveness and readiness probes guarantee only healthy pods receive traffic.
+                Failed pods are automatically restarted by the kubelet without manual
+                intervention.
+              </div>
+              <div class="feature-tags">
+                <span class="tag-chip">livenessProbe</span>
+                <span class="tag-chip">readinessProbe</span>
+                <span class="tag-chip">httpGet</span>
+              </div>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-icon icon-orange">&#x1F4CF;</div>
+              <div class="feature-title">Resource Governance</div>
+              <div class="feature-desc">
+                CPU and memory requests and limits prevent noisy-neighbour problems and
+                enable the scheduler to pack workloads efficiently across nodes.
+              </div>
+              <div class="feature-tags">
+                <span class="tag-chip">requests</span>
+                <span class="tag-chip">limits</span>
+                <span class="tag-chip">QoS: Burstable</span>
+              </div>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-icon icon-pink">&#x1F4C4;</div>
+              <div class="feature-title">ConfigMap Injection</div>
+              <div class="feature-desc">
+                HTML content and application configuration live in a ConfigMap, mounted as
+                a volume. Update content without rebuilding the image — just roll the pods.
+              </div>
+              <div class="feature-tags">
+                <span class="tag-chip">ConfigMap</span>
+                <span class="tag-chip">volumeMount</span>
+                <span class="tag-chip">subPath</span>
+              </div>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-icon icon-red">&#x1F6E1;&#xFE0F;</div>
+              <div class="feature-title">Network Isolation</div>
+              <div class="feature-desc">
+                Each component runs in a dedicated namespace with a ClusterIP Service for
+                internal routing and a LoadBalancer for controlled external ingress.
+              </div>
+              <div class="feature-tags">
+                <span class="tag-chip">Namespace</span>
+                <span class="tag-chip">ClusterIP</span>
+                <span class="tag-chip">LoadBalancer</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Architecture ────────────────────────────────── -->
+      <section id="architecture">
+        <div class="container">
+          <div class="section-label">System Design</div>
+          <h2 class="section-title">Request Flow <span>Architecture</span></h2>
+          <p class="section-sub">
+            Every incoming request travels through Kubernetes networking layers before
+            reaching the Apache HTTPD container serving your HTML content.
+          </p>
+
+          <div class="arch-flow">
+            <div class="arch-node">
+              <div class="arch-node-icon">&#x1F310;</div>
+              <div class="arch-node-name">Internet</div>
+              <div class="arch-node-sub">End User</div>
+            </div>
+            <div class="arch-arrow">&#x2192;</div>
+            <div class="arch-node">
+              <div class="arch-node-icon">&#x2601;&#xFE0F;</div>
+              <div class="arch-node-name">LoadBalancer</div>
+              <div class="arch-node-sub">Cloud LB / NodePort</div>
+            </div>
+            <div class="arch-arrow">&#x2192;</div>
+            <div class="arch-node">
+              <div class="arch-node-icon">&#x1F9F0;</div>
+              <div class="arch-node-name">Service</div>
+              <div class="arch-node-sub">kube-proxy / iptables</div>
+            </div>
+            <div class="arch-arrow">&#x2192;</div>
+            <div class="arch-node">
+              <div class="arch-node-icon">&#x1F4E6;</div>
+              <div class="arch-node-name">Pod (httpd)</div>
+              <div class="arch-node-sub">Apache &bull; port 80</div>
+            </div>
+            <div class="arch-arrow">&#x2192;</div>
+            <div class="arch-node">
+              <div class="arch-node-icon">&#x1F4C4;</div>
+              <div class="arch-node-name">ConfigMap Vol</div>
+              <div class="arch-node-sub">index.html mount</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Tech Stack ──────────────────────────────────── -->
+      <section id="stack">
+        <div class="container">
+          <div class="section-label">Technology Stack</div>
+          <h2 class="section-title">Built with <span>Battle-Tested</span> Tools</h2>
+          <p class="section-sub">
+            Each technology was chosen for production reliability, community support, and
+            seamless integration with the Kubernetes ecosystem.
+          </p>
+
+          <div class="tech-grid">
+            <div class="tech-badge">
+              <span class="tech-logo">&#x1F433;</span>
+              <div>
+                <div class="tech-info-name">Kubernetes</div>
+                <div class="tech-info-label">Orchestration</div>
+              </div>
+            </div>
+            <div class="tech-badge">
+              <span class="tech-logo">&#x1F30A;</span>
+              <div>
+                <div class="tech-info-name">Apache HTTPD</div>
+                <div class="tech-info-label">Web Server</div>
+              </div>
+            </div>
+            <div class="tech-badge">
+              <span class="tech-logo">&#x1F4E6;</span>
+              <div>
+                <div class="tech-info-name">Docker</div>
+                <div class="tech-info-label">Container Runtime</div>
+              </div>
+            </div>
+            <div class="tech-badge">
+              <span class="tech-logo">&#x1F4CB;</span>
+              <div>
+                <div class="tech-info-name">ConfigMap</div>
+                <div class="tech-info-label">Config Management</div>
+              </div>
+            </div>
+            <div class="tech-badge">
+              <span class="tech-logo">&#x1F511;</span>
+              <div>
+                <div class="tech-info-name">Secrets</div>
+                <div class="tech-info-label">Credential Store</div>
+              </div>
+            </div>
+            <div class="tech-badge">
+              <span class="tech-logo">&#x1F9EE;</span>
+              <div>
+                <div class="tech-info-name">HPA</div>
+                <div class="tech-info-label">Auto Scaling</div>
+              </div>
+            </div>
+            <div class="tech-badge">
+              <span class="tech-logo">&#x1F50D;</span>
+              <div>
+                <div class="tech-info-name">Prometheus</div>
+                <div class="tech-info-label">Metrics</div>
+              </div>
+            </div>
+            <div class="tech-badge">
+              <span class="tech-logo">&#x1F4CA;</span>
+              <div>
+                <div class="tech-info-name">Grafana</div>
+                <div class="tech-info-label">Dashboards</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Observability ───────────────────────────────── -->
+      <section id="observability">
+        <div class="container">
+          <div class="section-label">Observability</div>
+          <h2 class="section-title">Runtime <span>Metrics &amp; Logs</span></h2>
+          <p class="section-sub">
+            Full visibility into every layer — from HTTP request counts to pod memory
+            pressure — so on-call engineers can diagnose issues in seconds.
+          </p>
+
+          <div class="obs-grid">
+
+            <div class="obs-card">
+              <div class="obs-card-title">&#x1F4CA; Key Metrics</div>
+              <ul class="obs-metric-list">
+                <li>
+                  <span>HTTP Request Rate</span>
+                  <span class="obs-value blue">1,240 req/min</span>
+                </li>
+                <li>
+                  <span>p95 Response Time</span>
+                  <span class="obs-value good">82 ms</span>
+                </li>
+                <li>
+                  <span>Error Rate (5xx)</span>
+                  <span class="obs-value good">0.01%</span>
+                </li>
+                <li>
+                  <span>Pod Restarts (24h)</span>
+                  <span class="obs-value good">0</span>
+                </li>
+                <li>
+                  <span>Active Connections</span>
+                  <span class="obs-value blue">347</span>
+                </li>
+                <li>
+                  <span>Pending Pods</span>
+                  <span class="obs-value good">0</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="obs-card">
+              <div class="obs-card-title">&#x1F4DD; Live Access Log</div>
+              <div class="log-terminal">
+                <span class="log-line">
+                  <span class="log-time">10:42:01</span>
+                  <span class="log-level-ok">[OK]  </span>
+                  <span class="log-msg">GET / 200 12ms httpd-0</span>
+                </span>
+                <span class="log-line">
+                  <span class="log-time">10:42:03</span>
+                  <span class="log-level-ok">[OK]  </span>
+                  <span class="log-msg">GET / 200 9ms httpd-1</span>
+                </span>
+                <span class="log-line">
+                  <span class="log-time">10:42:05</span>
+                  <span class="log-level-info">[INF] </span>
+                  <span class="log-msg">Readiness probe passed httpd-2</span>
+                </span>
+                <span class="log-line">
+                  <span class="log-time">10:42:07</span>
+                  <span class="log-level-ok">[OK]  </span>
+                  <span class="log-msg">GET /health 200 2ms httpd-0</span>
+                </span>
+                <span class="log-line">
+                  <span class="log-time">10:42:09</span>
+                  <span class="log-level-warn">[WRN] </span>
+                  <span class="log-msg">HPA scaling check triggered</span>
+                </span>
+                <span class="log-line">
+                  <span class="log-time">10:42:10</span>
+                  <span class="log-level-ok">[OK]  </span>
+                  <span class="log-msg">GET / 200 11ms httpd-2</span>
+                </span>
+                <span class="log-line">
+                  <span class="log-time">10:42:12</span>
+                  <span class="log-level-ok">[OK]  </span>
+                  <span class="log-msg">GET / 200 8ms httpd-1</span>
+                </span>
+                <span class="log-line">
+                  <span class="log-time">10:42:14</span>
+                  <span class="log-level-info">[INF] </span>
+                  <span class="log-msg">ConfigMap volume synced successfully</span>
+                </span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ── About ───────────────────────────────────────── -->
+      <section id="about">
+        <div class="container">
+          <div class="about-inner">
+
+            <div>
+              <div class="section-label">About</div>
+              <h2 class="section-title">Why This <span>Architecture?</span></h2>
+              <p class="section-sub">
+                This project serves as a practical reference for deploying production-grade
+                static and server-rendered web applications on Kubernetes without exotic
+                dependencies.
+              </p>
+              <ul class="about-checklist">
+                <li>
+                  <span class="check-icon">&#x2714;</span>
+                  Immutable, image-based deployments with content injected via ConfigMap for easy hotfixes.
+                </li>
+                <li>
+                  <span class="check-icon">&#x2714;</span>
+                  Secrets never touch the image layer — injected as env vars at pod startup time.
+                </li>
+                <li>
+                  <span class="check-icon">&#x2714;</span>
+                  Resource requests and limits defined on every container to guarantee scheduling quality.
+                </li>
+                <li>
+                  <span class="check-icon">&#x2714;</span>
+                  Liveness and readiness probes ensure automatic self-healing without operator intervention.
+                </li>
+                <li>
+                  <span class="check-icon">&#x2714;</span>
+                  GitOps-ready YAML manifests — commit to trigger a pipeline, no imperative kubectl needed.
+                </li>
+              </ul>
+            </div>
+
+            <div class="about-card">
+              <div class="about-avatar">&#x1F469;&#x200D;&#x1F4BB;</div>
+              <div class="about-name">Princy Rechal</div>
+              <div class="about-role">DevOps &amp; Cloud Engineer</div>
+              <div class="about-bio">
+                Passionate about building resilient cloud-native platforms. Specialises in
+                Kubernetes, CI/CD pipelines, infrastructure as code, and developer
+                experience tooling. Currently exploring GitOps patterns with ArgoCD and
+                Flux.
+              </div>
+              <div class="skill-tags">
+                <span class="skill-tag">Kubernetes</span>
+                <span class="skill-tag">Docker</span>
+                <span class="skill-tag">Terraform</span>
+                <span class="skill-tag">ArgoCD</span>
+                <span class="skill-tag">Prometheus</span>
+                <span class="skill-tag">Helm</span>
+                <span class="skill-tag">GitOps</span>
+                <span class="skill-tag">AWS / GCP</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ── CTA ────────────────────────────────────────── -->
+      <section id="contact">
+        <div class="container">
+          <div class="cta-box">
+            <div class="section-label">Get Started</div>
+            <h2 class="section-title">Ready to Deploy Your <span>Own Platform?</span></h2>
+            <p class="section-sub">
+              All manifests are open-sourced and production-tested. Clone, customise, and
+              deploy to your cluster in minutes.
+            </p>
+            <div class="cta-actions">
+              <a href="#" class="btn btn-primary">View on GitHub</a>
+              <a href="#" class="btn btn-ghost">Read the Docs</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Footer ─────────────────────────────────────── -->
+      <footer>
+        <div class="container">
+          <div class="footer-grid">
+            <div class="footer-brand">
+              <span class="logo">PRINCY<span>.dev</span></span>
+              <p>
+                Production-grade Kubernetes manifests and cloud-native platform patterns.
+                Built with love for reliability, observability, and developer experience.
+              </p>
+            </div>
+            <div>
+              <div class="footer-col-title">Platform</div>
+              <ul class="footer-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#stack">Tech Stack</a></li>
+                <li><a href="#observability">Observability</a></li>
+              </ul>
+            </div>
+            <div>
+              <div class="footer-col-title">Resources</div>
+              <ul class="footer-links">
+                <li><a href="#">GitHub</a></li>
+                <li><a href="#">Documentation</a></li>
+                <li><a href="#">Helm Chart</a></li>
+                <li><a href="#">Changelog</a></li>
+              </ul>
+            </div>
+            <div>
+              <div class="footer-col-title">Connect</div>
+              <ul class="footer-links">
+                <li><a href="#">LinkedIn</a></li>
+                <li><a href="#">Twitter / X</a></li>
+                <li><a href="#">Dev.to</a></li>
+                <li><a href="#">Email</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="footer-bottom">
+            <span>&copy; 2026 Princy Rechal &mdash; Deployed on Kubernetes with Apache HTTPD</span>
+            <div class="footer-bottom-right">
+              <span>Privacy</span>
+              <span>Terms</span>
+              <span>Status</span>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+    </body>
+    </html>
+
+  
+  
+

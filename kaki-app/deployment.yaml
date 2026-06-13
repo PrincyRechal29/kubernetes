@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kaki-webapp-deployment
+  namespace: kaki-app
+  labels:
+    app: kaki-webapp
+    version: "1.0.0"
+    managed-by: kubectl
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kaki-webapp
+  template:
+    metadata:
+      labels:
+        app: kaki-webapp
+        version: "1.0.0"
+    spec:
+      containers:
+      - name: kaki-webapp
+        image: httpd:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        env:
+        - name: APP_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: kaki-webapp-config
+              key: APP_NAME
+        - name: ENVIRONMENT
+          valueFrom:
+            configMapKeyRef:
+              name: kaki-webapp-config
+              key: ENVIRONMENT
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: kaki-webapp-config
+              key: LOG_LEVEL
+
+        - name: APP_VERSION
+          valueFrom:
+            configMapKeyRef:
+              name: kaki-webapp-config
+              key: APP_VERSION
+
+        - name: APP_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: kaki-webapp-secrets
+              key: USERNAME
+
+        - name: APP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: kaki-webapp-secrets
+              key: PASSWORD
+
+        volumeMounts:
+        - name: html-volume
+          mountPath: /usr/local/apache2/htdocs/index.html
+          subPath: index.html
+        - name: html-volume
+          mountPath: /usr/local/apache2/htdocs/princy/index.html
+          subPath: princy.html
+
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "64Mi"
+          limits:
+            cpu: "250m"
+            memory: "128Mi"
+
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 15
+          failureThreshold: 3
+
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          failureThreshold: 3
+
+      volumes:
+      - name: html-volume
+        configMap:
+          name: kaki-webapp-config
+              
+
+
+
+            
+
