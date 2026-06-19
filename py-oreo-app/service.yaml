@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: py-oreo-app
+  namespace: py-oreo-app
+  labels:
+    app: py-oreo-app
+
+spec:
+  selector:
+    app: py-oreo-app
+
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 5000
+
+  type: LoadBalancer

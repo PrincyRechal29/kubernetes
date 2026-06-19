@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: ubuntu-webapp
+  namespace: ubuntu-webapp
+  labels:
+    app: ubuntu-webapp
+
+spec:
+  selector:
+    app: ubuntu-webapp
+
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 80
+
+  type: LoadBalancer

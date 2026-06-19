@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ubuntu-webapp
+  namespace: ubuntu-webapp
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: ubuntu-webapp
+
+  template:
+    metadata:
+      labels:
+        app: ubuntu-webapp
+
+    spec:
+      containers:
+      - name: ubuntu-container
+        image: ubuntu:latest
+        command: ["sleep", "3600"]
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: 64Mi
+            cpu: 100m
+          limits:
+            memory: 800Mi
+            cpu: 500m

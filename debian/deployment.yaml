@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: debian-webapp
+  namespace: debian-webapp
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: debian-webapp
+
+  template:
+    metadata:
+      labels:
+        app: debian-webapp
+
+    spec:
+      containers:
+      - name: debian-container
+        image: 341796273224.dkr.ecr.eu-north-1.amazonaws.com/kubegraf/web-app:latest
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: 64Mi
+            cpu: 100m
+          limits:
+            memory: 800Mi
+            cpu: 500m

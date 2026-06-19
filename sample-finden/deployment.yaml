@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: sample-deployment
+    namespace: sample
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: sample-app
+    template:
+        metadata:
+            labels:
+                app: sample-app
+        spec:
+            containers:
+            - name: sample-container
+              image: finden.azurecr.io/ubuntu-webapp:v3
+              command: ["sleep", "3600"]
+              ports:
+              - containerPort: 80
+              resources:
+                requests:
+                    memory: 64Mi
+                    cpu: 100m
+                limits:
+                    memory: 800Mi
+                    cpu: 500m
