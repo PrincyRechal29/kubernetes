@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: py-oreo-app
-  namespace: py-oreo-app
+  name: py-animie-app
+  namespace: py-animie-app
 
 spec:
   replicas: 1
 
   selector:
     matchLabels:
-      app: py-oreo-app
+      app: py-animie-app
 
   template:
     metadata:
       labels:
-        app: py-oreo-app
+        app: py-animie-app
 
     spec:
       containers:
-      - name: py-oreo-container
-        image: finden.azurecr.io/py-oreo-app:v1
+      - name: py-animie-container
+        image: finden.azurecr.io/py-animie:test
         ports:
         - containerPort: 5000
         resources:

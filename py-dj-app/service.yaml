@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: py-dj-app
+  namespace: py-dj-app
+  labels:
+    app: py-dj-app
+
+spec:
+  selector:
+    app: py-dj-app
+
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 8000
+
+  type: LoadBalancer

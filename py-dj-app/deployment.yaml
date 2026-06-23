@@ -1,27 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: py-oreo-app
-  namespace: py-oreo-app
+  name: py-dj-app
+  namespace: py-dj-app
 
 spec:
   replicas: 1
 
   selector:
     matchLabels:
-      app: py-oreo-app
+      app: py-dj-app
 
   template:
     metadata:
       labels:
-        app: py-oreo-app
+        app: py-dj-app
 
     spec:
       containers:
-      - name: py-oreo-container
-        image: finden.azurecr.io/py-oreo-app:v1
+      - name: py-dj-container
+        image: finden.azurecr.io/py-dj-app:v3
         ports:
-        - containerPort: 5000
+        - containerPort: 8000
         resources:
           requests:
             memory: 64Mi
