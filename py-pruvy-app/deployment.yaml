@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: py-pruvy-app
+  namespace: py-pruvy-app
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: py-pruvy-app
+
+  template:
+    metadata:
+      labels:
+        app: py-pruvy-app
+
+    spec:
+      containers:
+      - name: py-pruvy-container
+        image: latest
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            memory: 64Mi
+            cpu: 40m
+          limits:
+            memory: 100Mi
+            cpu: 100m
